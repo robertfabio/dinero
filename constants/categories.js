@@ -1,0 +1,98 @@
+export const categories = {
+  income: {
+    icon: "work",
+    background: "#d1fae5",
+    name: "income",
+    displayName: "Renda",
+  },
+  salary: {
+    icon: "attach-money",
+    background: "#e6f7ff",
+    name: "salary",
+    displayName: "Salário",
+  },
+  food: {
+    icon: "fastfood",
+    background: "#fee2e2",
+    name: "food",
+    displayName: "Alimentação",
+  },
+  transport: {
+    icon: "directions-car",
+    background: "#eef2ff",
+    name: "transport",
+    displayName: "Transporte",
+  },
+  housing: {
+    icon: "home",
+    background: "#fff7ed",
+    name: "housing",
+    displayName: "Moradia",
+  },
+  health: {
+    icon: "local-hospital",
+    background: "#f0fdf4",
+    name: "health",
+    displayName: "Saúde",
+  },
+  entertainment: {
+    icon: "movie",
+    background: "#fef3ff",
+    name: "entertainment",
+    displayName: "Entretenimento",
+  },
+  shopping: {
+    icon: "shopping-cart",
+    background: "#fff1f2",
+    name: "shopping",
+    displayName: "Compras",
+  },
+  bills: {
+    icon: "receipt",
+    background: "#f8fafc",
+    name: "bills",
+    displayName: "Contas",
+  },
+  utilities: {
+    icon: "flash-on",
+    background: "#fffaf0",
+    name: "utilities",
+    displayName: "Serviços",
+  },
+  education: {
+    icon: "school",
+    background: "#eefef9",
+    name: "education",
+    displayName: "Educação",
+  },
+  travel: {
+    icon: "flight",
+    background: "#eef2ff",
+    name: "travel",
+    displayName: "Viagem",
+  },
+  gift: {
+    icon: "card-giftcard",
+    background: "#fff0f6",
+    name: "gift",
+    displayName: "Presentes",
+  },
+  savings: {
+    icon: "account-balance",
+    background: "#f0f9ff",
+    name: "savings",
+    displayName: "Poupança",
+  },
+  investments: {
+    icon: "trending-up",
+    background: "#f7fee7",
+    name: "investments",
+    displayName: "Investimentos",
+  },
+  other: {
+    icon: "more-horiz",
+    background: "#f5f5f5",
+    name: "other",
+    displayName: "Outros",
+  },
+};
