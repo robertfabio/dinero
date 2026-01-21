@@ -83,7 +83,7 @@ export default function DineroTabBar({ state, descriptors, navigation }) {
         if (route.name === "index") IconComponent = LucideIcons.Home;
         else if (route.name === "add-transaction")
           IconComponent = LucideIcons.DollarSign;
-        else if (route.name === "summary")
+        else if (route.name === "sumary")
           IconComponent = LucideIcons.ScrollText;
         else IconComponent = LucideIcons.ShoppingBag;
 

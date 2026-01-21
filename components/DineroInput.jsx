@@ -7,7 +7,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { THEME } from "../constants/colors";
+import { THEME } from "../styles/globalStyles";
 
 const DineroInput = ({
   label,

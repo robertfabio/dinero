@@ -1,15 +1,14 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useContext, useRef, useState } from "react";
 import { Alert, ScrollView, View } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DineroButton from "../../components/DineroButton";
 import DineroDatePicker from "../../components/DineroDatePicker";
 import DineroInput from "../../components/DineroInput";
 import DineroPicker from "../../components/DineroPicker";
 import { categories } from "../../constants/categories";
-import { THEME } from "../../constants/colors";
 import { DineroContext } from "../../context/GlobalState";
-import { GlobalStyles } from "../styles/globalStyles";
+import { GlobalStyles, THEME } from "../../styles/globalStyles";
 
 const initialFormState = {
   description: "",
@@ -29,15 +28,13 @@ export default function AddTransactionScreen() {
     } catch (error) {
       console.log("Error saving data to AsyncStorage:", error);
     }
-  }
+  };
 
   const handleCurrencyChange = (text) => {
     const formattedValue = text.replace(/\D/g, "");
     const numericValue = formattedValue ? parseFloat(formattedValue) / 100 : 0;
     setForm({ ...form, value: numericValue });
   };
-
-  
 
   const AddTransaction = async () => {
     const newTransaction = { id: transactions.length + 1, ...form };

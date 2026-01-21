@@ -21,7 +21,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DineroButton from "../components/DineroButton";
-import { THEME } from "../constants/colors";
+import { THEME } from "../styles/globalStyles";
 
 const { width } = Dimensions.get("window");
 

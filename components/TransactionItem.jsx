@@ -1,14 +1,36 @@
 import { StyleSheet, Text, View } from "react-native";
+import { COLORS, GlobalStyles } from "../styles/globalStyles";
+import CategoryItem from "./CategoryItem";
 
-export default function TransactionItem() {
+export default function TransactionItem({
+  category,
+  date,
+  description,
+  value,
+}) {
+  const isIncome = category === "income";
+  const valueColor = isIncome ? COLORS.secondary : COLORS.danger;
+
   return (
-    <View style={styles.textContainer}>
-      <View style={styles.textContainer}>
-        <Text> 03/03/2005 </Text>
-        <View style={styles.bottomLineContainer}>
-          <Text> Marmita </Text>
-          <Text> RS 400.00 </Text>
+    <View style={[GlobalStyles.duoContainer, styles.itemContainer]}>
+      <View style={styles.headerRow}>
+        <CategoryItem category={category} size={40} />
+        <View style={styles.dateContainer}>
+          <Text style={styles.dateText}>{date}</Text>
         </View>
+      </View>
+
+      <View style={styles.contentRow}>
+        <Text style={styles.descriptionText} numberOfLines={1}>
+          {description}
+        </Text>
+        <Text style={[styles.valueText, { color: valueColor }]}>
+          {isIncome ? "+ " : "- "}
+          {value.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          })}
+        </Text>
       </View>
     </View>
   );
@@ -16,22 +38,42 @@ export default function TransactionItem() {
 
 const styles = StyleSheet.create({
   itemContainer: {
-    display: "flex",
+    marginBottom: 12,
+    paddingVertical: 16,
+    height: "auto",
+    minHeight: 80,
+  },
+  headerRow: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingBottom: 16,
+    marginBottom: 8,
   },
-  textContainer: {
-    display: "flex",
-    flexDirection: "column",
-    flex: 1,
-    marginLeft: 12,
+  dateContainer: {
+    backgroundColor: COLORS.screenBg,
+    paddingHorizontal: 8,
     paddingVertical: 4,
+    borderRadius: 8,
   },
-  bottomLineContainer: {
-    display: "flex",
+  dateText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: COLORS.textLight,
+  },
+  contentRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
+  },
+  descriptionText: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: COLORS.text,
+    flex: 1,
+    marginRight: 8,
+  },
+  valueText: {
+    fontSize: 18,
+    fontWeight: "900",
   },
 });
