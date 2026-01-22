@@ -376,10 +376,9 @@ const styles = StyleSheet.create({
   inputText: { fontSize: 18, color: "#4B4B4B", fontWeight: "600" },
   placeholderText: { color: "#AFAFAF" },
   iconContainer: {
-    backgroundColor: "#F0F0F0",
-    borderRadius: 8,
+    borderRadius: 12,
     padding: 6,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: "#E5E5E5",
   },
   iconText: { fontSize: 20 },

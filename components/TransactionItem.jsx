@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS, GlobalStyles } from "../styles/globalStyles";
 import CategoryItem from "./CategoryItem";
 
@@ -7,6 +8,7 @@ export default function TransactionItem({
   date,
   description,
   value,
+  onDelete,
 }) {
   const isIncome = category === "income";
   const valueColor = isIncome ? COLORS.secondary : COLORS.danger;
@@ -31,6 +33,11 @@ export default function TransactionItem({
             currency: "BRL",
           })}
         </Text>
+        {onDelete && (
+          <Pressable onPress={onDelete} style={styles.deleteButton} hitSlop={8}>
+            <MaterialIcons name="delete" size={22} color={COLORS.danger} />
+          </Pressable>
+        )}
       </View>
     </View>
   );
@@ -75,5 +82,9 @@ const styles = StyleSheet.create({
   valueText: {
     fontSize: 18,
     fontWeight: "900",
+  },
+  deleteButton: {
+    marginLeft: 8,
+    padding: 4,
   },
 });

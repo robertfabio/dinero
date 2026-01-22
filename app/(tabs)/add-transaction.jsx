@@ -37,6 +37,20 @@ export default function AddTransactionScreen() {
   };
 
   const AddTransaction = async () => {
+    const canSubmit = form.description?.trim()
+      ? form.value && form.value > 0
+        ? true
+        : false
+      : false;
+
+    if (!canSubmit) {
+      Alert.alert(
+        "Erro",
+        "Preencha a descrição e informe um valor maior que zero.",
+      );
+      return;
+    }
+
     const newTransaction = { id: transactions.length + 1, ...form };
     const updatedTransactions = [...transactions, newTransaction];
     console.log("Transaction added:", newTransaction);
@@ -47,12 +61,7 @@ export default function AddTransactionScreen() {
   };
 
   return (
-    <SafeAreaView
-      style={[
-        GlobalStyles.ScreenContainer,
-        { backgroundColor: THEME.background },
-      ]}
-    >
+    <SafeAreaView style={[GlobalStyles.ScreenContainer, { padding: 14 }]}>
       <ScrollView contentContainerStyle={GlobalStyles.Content}>
         <View>
           <View style={GlobalStyles.Divider}>
@@ -141,14 +150,16 @@ export default function AddTransactionScreen() {
               placeholder="Selecione uma categoria"
             />
           </View>
-          <DineroButton
-            useParticles={true}
-            initialFaceColor={THEME.text}
-            initialShadowColor="#9E9E9E"
-            initialTextColor={THEME.background}
-            title={"Salvar Transação"}
-            onPress={AddTransaction}
-          />
+          <View style={{ marginTop: 40 }}>
+            <DineroButton
+              useParticles={true}
+              initialFaceColor={THEME.text}
+              initialShadowColor="#9E9E9E"
+              initialTextColor={THEME.background}
+              title={"Salvar Transação"}
+              onPress={AddTransaction}
+            />
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
