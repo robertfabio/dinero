@@ -1,6 +1,5 @@
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-
 import { useRef, useState } from "react";
 import {
   Dimensions,
@@ -60,14 +59,14 @@ const Slide = ({ item, index, x }) => {
     const scale = interpolate(
       x.value,
       inputRange,
-      [0.85, 1.05, 0.85],
+      [0.9, 1.1, 0.9],
       Extrapolation.CLAMP,
     );
 
     const rotate = interpolate(
       x.value,
       inputRange,
-      [-5, 0, 5],
+      [-8, 0, 8],
       Extrapolation.CLAMP,
     );
 
@@ -79,14 +78,14 @@ const Slide = ({ item, index, x }) => {
   const animatedTextStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
       x.value,
-      [(index - 0.5) * width, index * width, (index + 0.5) * width],
+      [(index - 0.8) * width, index * width, (index + 0.8) * width],
       [0, 1, 0],
       Extrapolation.CLAMP,
     );
     const translateY = interpolate(
       x.value,
-      [(index - 0.5) * width, index * width, (index + 0.5) * width],
-      [20, 0, 20],
+      [(index - 0.8) * width, index * width, (index + 0.8) * width],
+      [30, 0, 30],
       Extrapolation.CLAMP,
     );
     return {
@@ -176,12 +175,15 @@ const WelcomeScreen = () => {
   const flatListRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      x.value = event.contentOffset.x;
-      runOnJS(setCurrentIndex)(Math.round(event.contentOffset.x / width));
+  const scrollHandler = useAnimatedScrollHandler(
+    {
+      onScroll: (event) => {
+        x.value = event.contentOffset.x;
+        runOnJS(setCurrentIndex)(Math.round(event.contentOffset.x / width));
+      },
     },
-  });
+    [],
+  );
 
   const handleNext = () => {
     const nextIndex = Math.round(x.value / width) + 1;
@@ -243,7 +245,6 @@ const WelcomeScreen = () => {
             >
               Termos de Serviço
             </Text>
-            .
           </Text>
         </View>
       </View>

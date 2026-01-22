@@ -1,5 +1,5 @@
 import * as LucideIcons from "lucide-react-native";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Animated, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -8,13 +8,28 @@ const COLORS = {
   inactive: "#9E9E9E",
 };
 
+const TAB_BUTTON_SIZE = 56;
+const SPACING = 4;
+
 export default function DineroTabBar({ state, descriptors, navigation }) {
   const insets = useSafeAreaInsets();
+  const routeCount = state.routes.length;
+
   const animatedValues = useRef(
     state.routes.map(() => new Animated.Value(0)),
   ).current;
 
   const slideAnim = useRef(new Animated.Value(state.index)).current;
+
+  const { tabBarWidth, inputRange, outputRange } = useMemo(() => {
+    const width = routeCount * TAB_BUTTON_SIZE + SPACING * 2;
+    const input = Array.from({ length: routeCount }, (_, i) => i);
+    const output = Array.from(
+      { length: routeCount },
+      (_, i) => i * TAB_BUTTON_SIZE,
+    );
+    return { tabBarWidth: width, inputRange: input, outputRange: output };
+  }, [routeCount]);
 
   useEffect(() => {
     Animated.parallel([
@@ -45,13 +60,16 @@ export default function DineroTabBar({ state, descriptors, navigation }) {
   }, [state.index, animatedValues, slideAnim]);
 
   const translateX = slideAnim.interpolate({
-    inputRange: [0, 1, 2],
-    outputRange: [4, 58, 112],
+    inputRange,
+    outputRange,
   });
 
   return (
     <View
-      style={[styles.wrapper, { paddingBottom: Math.max(insets.bottom, 8) }]}
+      style={[
+        styles.wrapper,
+        { paddingBottom: Math.max(insets.bottom, 8), width: tabBarWidth },
+      ]}
     >
       <Animated.View
         style={[
@@ -61,7 +79,9 @@ export default function DineroTabBar({ state, descriptors, navigation }) {
           },
         ]}
       />
-      <View style={styles.backgroundBar} />
+      <View
+        style={[styles.backgroundBar, { width: tabBarWidth - SPACING * 2 }]}
+      />
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;
@@ -80,7 +100,7 @@ export default function DineroTabBar({ state, descriptors, navigation }) {
         };
 
         let IconComponent;
-        if (route.name === "index") IconComponent = LucideIcons.Home;
+        if (route.name === "home") IconComponent = LucideIcons.Home;
         else if (route.name === "add-transaction")
           IconComponent = LucideIcons.DollarSign;
         else if (route.name === "sumary")
@@ -157,42 +177,41 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "transparent",
     paddingTop: 8,
-    maxWidth: 180,
-    width: 180,
-    justifyContent: "center",
+    paddingHorizontal: SPACING,
+    justifyContent: "flex-start",
   },
   backgroundBar: {
     position: "absolute",
-    left: 4,
-    right: 4,
+    left: SPACING,
+    right: SPACING,
     top: 18,
-    height: 56,
+    height: TAB_BUTTON_SIZE,
     backgroundColor: "rgb(37, 37, 37)",
-    borderRadius: 28,
+    borderRadius: TAB_BUTTON_SIZE / 2,
     elevation: 2,
   },
   slidingBackground: {
     position: "absolute",
-    left: 4,
+    left: SPACING,
     top: 18,
-    width: 56,
-    height: 56,
+    width: TAB_BUTTON_SIZE,
+    height: TAB_BUTTON_SIZE,
     backgroundColor: "#FFFFFF",
-    borderRadius: 28,
+    borderRadius: TAB_BUTTON_SIZE / 2,
     zIndex: 1,
   },
   tabButton: {
     alignItems: "center",
     justifyContent: "center",
-    width: 56,
-    height: 56,
+    width: TAB_BUTTON_SIZE,
+    height: TAB_BUTTON_SIZE,
     marginTop: 10,
     zIndex: 2,
   },
   iconWrapper: {
     alignItems: "center",
     justifyContent: "center",
-    width: 56,
-    height: 56,
+    width: TAB_BUTTON_SIZE,
+    height: TAB_BUTTON_SIZE,
   },
 });

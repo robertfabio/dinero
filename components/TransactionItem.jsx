@@ -1,7 +1,7 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { categories } from "../constants/categories";
 import { COLORS, GlobalStyles } from "../styles/globalStyles";
-import CategoryItem from "./CategoryItem";
 
 export default function TransactionItem({
   category,
@@ -12,11 +12,23 @@ export default function TransactionItem({
 }) {
   const isIncome = category === "income";
   const valueColor = isIncome ? COLORS.secondary : COLORS.danger;
+  const categoryInfo = categories[category] || categories.other;
 
   return (
     <View style={[GlobalStyles.duoContainer, styles.itemContainer]}>
       <View style={styles.headerRow}>
-        <CategoryItem category={category} size={40} />
+        <View
+          style={[
+            styles.iconContainer,
+            { backgroundColor: categoryInfo.background },
+          ]}
+        >
+          <MaterialIcons
+            name={categoryInfo.icon}
+            size={24}
+            color={COLORS.text}
+          />
+        </View>
         <View style={styles.dateContainer}>
           <Text style={styles.dateText}>{date}</Text>
         </View>
@@ -55,6 +67,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 8,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 3,
+    borderColor: COLORS.border,
   },
   dateContainer: {
     backgroundColor: COLORS.screenBg,

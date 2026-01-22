@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useContext, useRef, useState } from "react";
 import { Alert, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -9,6 +8,7 @@ import DineroPicker from "../../components/DineroPicker";
 import { categories } from "../../constants/categories";
 import { DineroContext } from "../../context/GlobalState";
 import { GlobalStyles, THEME } from "../../styles/globalStyles";
+import { storageUtils } from "../../utils/storage";
 
 const initialFormState = {
   description: "",
@@ -22,11 +22,11 @@ export default function AddTransactionScreen() {
   const [transactions, setTransactions] = useContext(DineroContext);
   const valueInputRef = useRef();
 
-  const setASyncStorage = async (data) => {
+  const setASyncStorage = (data) => {
     try {
-      await AsyncStorage.setItem("@dinero:transactions", JSON.stringify(data));
+      storageUtils.setItem("@dinero:transactions", JSON.stringify(data));
     } catch (error) {
-      console.log("Error saving data to AsyncStorage:", error);
+      console.log("Error saving data to storage:", error);
     }
   };
 
@@ -56,7 +56,7 @@ export default function AddTransactionScreen() {
     console.log("Transaction added:", newTransaction);
     setTransactions(updatedTransactions);
     setForm(initialFormState);
-    await setASyncStorage(updatedTransactions);
+    setASyncStorage(updatedTransactions);
     Alert.alert("Sucesso", "Transação adicionada com sucesso!");
   };
 

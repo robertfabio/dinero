@@ -1,15 +1,15 @@
 import {
-    forwardRef,
-    useEffect,
-    useImperativeHandle,
-    useRef,
-    useState,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
 } from "react";
 import { Animated, Easing, StyleSheet, Text, View } from "react-native";
 
 const DEFAULT_CONFIG = {
   count: 8,
-  duration: 1200,
+  duration: 800,
   scatterX: 100,
   scatterY: 200,
 };
@@ -26,7 +26,7 @@ const MoneyParticle = ({ onComplete, config, duration }) => {
     }).start(({ finished }) => {
       if (finished) onComplete?.();
     });
-  }, []);
+  }, [anim, duration, onComplete]);
 
   const translateY = anim.interpolate({
     inputRange: [0, 1],

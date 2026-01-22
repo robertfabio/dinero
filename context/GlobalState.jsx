@@ -1,5 +1,5 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useEffect, useState } from "react";
+import { storageUtils } from "../utils/storage";
 
 export const DineroContext = createContext();
 
@@ -7,20 +7,19 @@ export default function GlobalState({ children }) {
   const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
-    const getASyncStorage = async () => {
+    const getStoredData = () => {
       try {
-        const storedTransactions = await AsyncStorage.getItem(
-          "@dinero:transactions",
-        );
+        const storedTransactions = storageUtils.getItem("@dinero:transactions");
         if (storedTransactions) {
           setTransactions(JSON.parse(storedTransactions));
         }
       } catch (error) {
-        console.log("Error retrieving data from AsyncStorage:", error);
+        console.log("Error retrieving data from storage:", error);
       }
     };
-    getASyncStorage();
+    getStoredData();
   }, []);
+
   return (
     <DineroContext.Provider value={[transactions, setTransactions]}>
       {children}

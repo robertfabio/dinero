@@ -19,7 +19,8 @@
         "monochromeImage": "./assets/icon.jpg"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.robertofabio.dinero"
     },
     "web": {
       "output": "static",

@@ -1,19 +1,25 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import * as LucideIcons from "lucide-react-native";
 import React, { useState } from "react";
-import { Pressable } from "react-native";
+import { ActivityIndicator, Modal, Pressable, View } from "react-native";
+import AuthScreen from "../../components/AuthScreen";
 import DineroModal from "../../components/DineroModal";
 import DineroTabBar from "../../components/DineroTabBar";
+import SecuritySettings from "../../components/SecuritySettings";
+import { useAuth } from "../../context/AuthContext";
 import { COLORS } from "../../styles/globalStyles";
+import { storageUtils } from "../../utils/storage";
 
 export default function TabsLayout() {
   const [resetModal, setResetModal] = useState(false);
+  const [securityModal, setSecurityModal] = useState(false);
+  const { isAuthenticated, isLoading } = useAuth();
 
-  const handleResetAll = async () => {
+  const handleResetAll = () => {
     try {
-      await AsyncStorage.removeItem("@dinero:transactions");
+      storageUtils.removeItem("@dinero:transactions");
       if (global.location) {
         global.location.reload();
       }
@@ -21,6 +27,25 @@ export default function TabsLayout() {
       console.error("Error resetting transactions:", error);
     }
   };
+
+  if (isLoading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: COLORS.screenBg,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <AuthScreen />;
+  }
 
   return (
     <>
@@ -43,27 +68,8 @@ export default function TabsLayout() {
           },
         }}
       >
-        <Tabs.Screen
-          name="index"
-          options={{
-            title: "Transações",
-            headerRight: () => (
-              <Pressable
-                onPress={() => setResetModal(true)}
-                style={{
-                  padding: 8,
-                  marginRight: 12,
-                  borderRadius: 8,
-                  backgroundColor: COLORS.screenBg,
-                  borderWidth: 2,
-                  borderColor: COLORS.neutral,
-                }}
-              >
-                <MaterialIcons name="refresh" size={24} color={COLORS.danger} />
-              </Pressable>
-            ),
-          }}
-        />
+        <Tabs.Screen name="home" options={{ headerShown: false }} />
+
         <Tabs.Screen
           name="add-transaction"
           options={{ title: "Adicionar Transação" }}
@@ -74,7 +80,81 @@ export default function TabsLayout() {
             title: "Resumo Financeiro",
           }}
         />
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "Transações",
+            headerRight: () => (
+              <View style={{ flexDirection: "row", marginRight: 12 }}>
+                <Pressable
+                  onPress={() => setSecurityModal(true)}
+                  style={{
+                    padding: 8,
+                    marginRight: 8,
+                    borderRadius: 8,
+                    backgroundColor: COLORS.screenBg,
+                    borderWidth: 2,
+                    borderColor: COLORS.neutral,
+                  }}
+                >
+                  <LucideIcons.Shield
+                    size={24}
+                    color={COLORS.primary}
+                    strokeWidth={2}
+                  />
+                </Pressable>
+                <Pressable
+                  onPress={() => setResetModal(true)}
+                  style={{
+                    padding: 8,
+                    borderRadius: 8,
+                    backgroundColor: COLORS.screenBg,
+                    borderWidth: 2,
+                    borderColor: COLORS.neutral,
+                  }}
+                >
+                  <MaterialIcons
+                    name="refresh"
+                    size={24}
+                    color={COLORS.danger}
+                  />
+                </Pressable>
+              </View>
+            ),
+          }}
+        />
       </Tabs>
+
+      <Modal
+        visible={securityModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setSecurityModal(false)}
+      >
+        <View style={{ flex: 1 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              paddingHorizontal: 20,
+              paddingTop: 60,
+              paddingBottom: 20,
+              backgroundColor: COLORS.screenBg,
+              borderBottomWidth: 1,
+              borderBottomColor: "rgba(255, 255, 255, 0.1)",
+            }}
+          >
+            <Pressable
+              onPress={() => setSecurityModal(false)}
+              style={{ padding: 8 }}
+            >
+              <LucideIcons.X size={24} color={COLORS.text} />
+            </Pressable>
+          </View>
+          <SecuritySettings />
+        </View>
+      </Modal>
 
       <DineroModal
         visible={resetModal}

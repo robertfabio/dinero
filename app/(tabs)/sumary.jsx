@@ -2,19 +2,25 @@ import { MaterialIcons } from "@expo/vector-icons";
 import * as Print from "expo-print";
 import { useNavigation } from "expo-router";
 import * as Sharing from "expo-sharing";
-import { useContext, useLayoutEffect, useRef, useState } from "react";
 import {
-    Alert,
-    Dimensions,
-    Pressable,
-    ScrollView,
-    Share,
-    Text,
-    View,
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  Alert,
+  Dimensions,
+  Pressable,
+  ScrollView,
+  Share,
+  Text,
+  View,
 } from "react-native";
-import { PieChart } from "react-native-chart-kit";
 
 import AnimatedCard from "../../components/AnimatedCard";
+import AnimatedPieChart from "../../components/AnimatedPieChart";
 import CategoryListItem from "../../components/CategoryListItem";
 import DineroButton from "../../components/DineroButton";
 import PeriodFilter from "../../components/PeriodFilter";
@@ -89,7 +95,7 @@ export default function SumaryScreen() {
   const summary = useSummaryData(transactions, period);
   const comparison = usePeriodComparison(transactions, period);
 
-  const shareText = async () => {
+  const shareText = useCallback(async () => {
     const text = `Meu Resumo Financeiro - Dinero\n\nReceitas: ${summary.income.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
     \nDespesas: ${summary.expenses.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
     \nSaldo: ${summary.balance.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
@@ -102,7 +108,7 @@ export default function SumaryScreen() {
     } catch (error) {
       console.error("Erro ao compartilhar:", error);
     }
-  };
+  }, [summary]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -122,7 +128,7 @@ export default function SumaryScreen() {
         </Pressable>
       ),
     });
-  }, [navigation, summary]);
+  }, [navigation, summary, shareText]);
 
   const exportToPDF = async () => {
     try {
@@ -263,17 +269,9 @@ export default function SumaryScreen() {
                     Despesas por Categoria
                   </Text>
                 </View>
-                <PieChart
+                <AnimatedPieChart
                   data={summary.chartData}
-                  width={screenWidth - 80}
-                  height={220}
-                  chartConfig={{
-                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                  }}
-                  accessor="population"
-                  backgroundColor="transparent"
-                  paddingLeft="15"
-                  absolute
+                  size={Math.min(screenWidth - 80, 280)}
                 />
               </View>
             </AnimatedCard>
