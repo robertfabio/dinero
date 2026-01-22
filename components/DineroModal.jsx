@@ -1,6 +1,13 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { useEffect, useRef } from "react";
-import { Animated, Modal, Pressable, Text, View } from "react-native";
+import {
+    Animated,
+    Modal,
+    Pressable,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import { COLORS, GlobalStyles, METRICS } from "../styles/globalStyles";
 import DineroButton from "./DineroButton";
 
@@ -56,7 +63,7 @@ export default function DineroModal({
       <Animated.View
         style={{
           flex: 1,
-          backgroundColor: "rgba(0,0,0,0.25)",
+          backgroundColor: "rgba(0,0,0,0.12)",
           justifyContent: "center",
           alignItems: "center",
           padding: 20,
@@ -127,8 +134,9 @@ export default function DineroModal({
               initialTextColor={COLORS.white}
               useParticles={false}
             />
-            <Pressable
+            <TouchableOpacity
               onPress={onClose}
+              activeOpacity={0.4}
               style={{
                 backgroundColor: COLORS.background,
                 height: 50,
@@ -151,7 +159,7 @@ export default function DineroModal({
               >
                 {cancelText}
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </Animated.View>
       </Animated.View>

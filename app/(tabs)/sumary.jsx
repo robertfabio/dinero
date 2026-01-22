@@ -155,12 +155,15 @@ export default function SumaryScreen() {
       <ScrollView
         contentContainerStyle={[
           GlobalStyles.contentContainer,
-          { paddingBottom: 110 },
+          { paddingBottom: 110, paddingTop: 2 },
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <PeriodFilter selected={period} onSelect={setPeriod} />
-
+        <PeriodFilter
+          selected={period}
+          onSelect={setPeriod}
+          style={{ marginBottom: 8 }}
+        />
         <AnimatedCard delay={0}>
           <View style={{ gap: 12 }}>
             <SummaryCard
@@ -188,7 +191,7 @@ export default function SumaryScreen() {
         </AnimatedCard>
 
         <AnimatedCard delay={100}>
-          <View style={{ flexDirection: "row", gap: 14, marginTop: 16 }}>
+          <View style={{ flexDirection: "row", gap: 4, marginTop: 16 }}>
             <StatCard
               icon="receipt-long"
               iconColor={COLORS.primary}
