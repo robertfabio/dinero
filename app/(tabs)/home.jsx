@@ -1,29 +1,38 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
+import { useRouter } from "expo-router";
 import * as LucideIcons from "lucide-react-native";
 import { useContext, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    RefreshControl,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  RefreshControl,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AnimatedNumber from "../../components/AnimatedNumber";
+import CoinTicker from "../../components/CoinTicker";
 import NewsItem from "../../components/NewsItem";
 import QuickInsights from "../../components/QuickInsights";
 import StatCard from "../../components/StatCard";
 import TransactionItem from "../../components/TransactionItem";
 import { DineroContext } from "../../context/GlobalState";
+import { useCoinData } from "../../hooks/useCoinData";
 import { useNewsFeeds } from "../../hooks/useNewsFeeds";
 import { COLORS, GlobalStyles } from "../../styles/globalStyles";
 
 export default function Home() {
+  const router = useRouter();
   const [transactions] = useContext(DineroContext);
   const { news, loading: newsLoading, refresh: refreshNews } = useNewsFeeds();
+  const {
+    allCoins,
+    loading: coinsLoading,
+    refresh: refreshCoins,
+  } = useCoinData();
   const [showNews, setShowNews] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -55,40 +64,8 @@ export default function Home() {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await refreshNews();
+    await Promise.all([refreshNews(), refreshCoins()]);
     setRefreshing(false);
-  };
-
-  const combinedData = useMemo(() => {
-    const items = [];
-
-    recentTransactions.forEach((transaction) => {
-      items.push({ type: "transaction", data: transaction });
-    });
-
-    if (showNews) {
-      news.slice(0, 5).forEach((newsItem) => {
-        items.push({ type: "news", data: newsItem });
-      });
-    }
-
-    return items;
-  }, [recentTransactions, news, showNews]);
-
-  const renderItem = ({ item }) => {
-    if (item.type === "transaction") {
-      return (
-        <TransactionItem
-          category={item.data.category}
-          date={item.data.date}
-          description={item.data.description}
-          value={item.data.value}
-        />
-      );
-    } else if (item.type === "news") {
-      return <NewsItem item={item.data} />;
-    }
-    return null;
   };
 
   return (
@@ -97,23 +74,26 @@ export default function Home() {
 
       <View style={styles.header}>
         <View>
-          <Text style={styles.greeting}>Olá! 👋</Text>
+          <Text style={styles.greeting}>Olá! </Text>
           <Text style={styles.subtitle}>Seu resumo financeiro</Text>
         </View>
-        <TouchableOpacity style={styles.avatarCircle}>
-          <LucideIcons.User size={24} color={COLORS.text} strokeWidth={2.5} />
+        <TouchableOpacity
+          onPress={() => router.navigate("/settings")}
+          style={styles.avatarCircle}
+        >
+          <LucideIcons.Settings
+            size={24}
+            color={COLORS.text}
+            strokeWidth={2.5}
+          />
         </TouchableOpacity>
       </View>
 
       <FlashList
-        data={combinedData}
+        data={[{ id: "content" }]}
         estimatedItemSize={100}
-        keyExtractor={(item, index) =>
-          item.type === "transaction"
-            ? `tx-${item.data.id}`
-            : `news-${item.data.id}`
-        }
-        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        renderItem={() => null}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -125,6 +105,9 @@ export default function Home() {
         }
         ListHeaderComponent={
           <View>
+            {/* Ticker de Cotações */}
+            <CoinTicker coins={allCoins} loading={coinsLoading} />
+
             <View style={[GlobalStyles.duoContainer, styles.balanceCard]}>
               <View style={styles.balanceHeader}>
                 <MaterialIcons
@@ -148,6 +131,7 @@ export default function Home() {
                 duration={1200}
               />
             </View>
+
             <View style={styles.statsGrid}>
               <StatCard
                 label="Receitas"
@@ -174,27 +158,42 @@ export default function Home() {
             </View>
 
             {transactions.length > 0 && (
-              <View>
-                <QuickInsights
-                  summary={summary}
-                  categoryData={summary.categoryData}
-                />
-              </View>
+              <QuickInsights
+                summary={summary}
+                categoryData={summary.categoryData}
+              />
             )}
 
+            {/* Seção de Transações */}
             {recentTransactions.length > 0 && (
-              <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>Transações Recentes</Text>
-                <MaterialIcons
-                  name="history"
-                  size={20}
-                  color={COLORS.textLight}
-                />
+              <View>
+                <View style={styles.sectionHeader}>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <MaterialIcons
+                      name="history"
+                      size={18}
+                      color={COLORS.primary}
+                    />
+                    <Text style={[styles.sectionTitle, { marginLeft: 6 }]}>
+                      Transações Recentes
+                    </Text>
+                  </View>
+                </View>
+                {recentTransactions.map((transaction) => (
+                  <TransactionItem
+                    key={transaction.id}
+                    category={transaction.category}
+                    date={transaction.date}
+                    description={transaction.description}
+                    value={transaction.value}
+                  />
+                ))}
               </View>
             )}
 
+            {/* Seção de Notícias */}
             {news.length > 0 && (
-              <View style={styles.newsHeaderContainer}>
+              <View style={styles.newsSection}>
                 <View style={styles.sectionHeader}>
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <LucideIcons.Newspaper
@@ -225,6 +224,12 @@ export default function Home() {
                     <ActivityIndicator size="small" color={COLORS.primary} />
                   </View>
                 )}
+                {showNews &&
+                  news
+                    .slice(0, 5)
+                    .map((newsItem) => (
+                      <NewsItem key={newsItem.id} item={newsItem} />
+                    ))}
               </View>
             )}
           </View>
@@ -331,8 +336,8 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
-  newsHeaderContainer: {
-    marginTop: 8,
+  newsSection: {
+    marginTop: 16,
   },
   toggleButton: {
     padding: 4,

@@ -95,7 +95,7 @@ export function useNewsFeeds() {
                   return "UOL";
                 try {
                   return new URL(feedUrl).hostname.replace(/^www\./, "");
-                } catch (e) {
+                } catch {
                   return feedUrl;
                 }
               })(),

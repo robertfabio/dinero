@@ -1,28 +1,37 @@
-import {
-    Canvas,
-    Easing,
-    Path,
-    runTiming,
-    Skia,
-    useValue,
-} from "@shopify/react-native-skia";
-import { useEffect } from "react";
+import { Canvas, Path, Skia } from "@shopify/react-native-skia";
+import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
+import {
+  Easing,
+  runOnJS,
+  useAnimatedReaction,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
 import { COLORS } from "../styles/globalStyles";
 
 export default function AnimatedPieChart({ data, size = 200 }) {
-  const progress = useValue(0);
+  const progress = useSharedValue(0);
+  const [opacity, setOpacity] = useState(0);
+
+  useAnimatedReaction(
+    () => progress.value,
+    (value) => {
+      runOnJS(setOpacity)(value);
+    },
+  );
 
   useEffect(() => {
-    runTiming(progress, 1, {
+    progress.value = 0;
+    progress.value = withTiming(1, {
       duration: 800,
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
     });
   }, [data, progress]);
 
   const total = data.reduce((sum, item) => sum + item.population, 0);
-  let currentAngle = -Math.PI / 2; 
+  let currentAngle = -Math.PI / 2;
 
   const paths = data.map((item, index) => {
     const percentage = item.population / total;
@@ -66,7 +75,7 @@ export default function AnimatedPieChart({ data, size = 200 }) {
             key={index}
             path={item.path}
             color={item.color}
-            opacity={progress}
+            opacity={opacity}
             style="fill"
           />
         ))}

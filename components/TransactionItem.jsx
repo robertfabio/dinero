@@ -69,13 +69,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   iconContainer: {
-    width: 40,
+    width: 44,
     height: 40,
     borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 3,
-    borderColor: COLORS.border,
+    borderWidth: 2,
+    borderColor: COLORS.neutralDark,
   },
   dateContainer: {
     backgroundColor: COLORS.screenBg,

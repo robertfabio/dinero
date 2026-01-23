@@ -76,23 +76,6 @@ export default function TabsLayout() {
             headerRight: () => (
               <View style={{ flexDirection: "row", marginRight: 12 }}>
                 <Pressable
-                  onPress={() => setSecurityModal(true)}
-                  style={{
-                    padding: 8,
-                    marginRight: 8,
-                    borderRadius: 8,
-                    backgroundColor: COLORS.screenBg,
-                    borderWidth: 2,
-                    borderColor: COLORS.neutral,
-                  }}
-                >
-                  <LucideIcons.Shield
-                    size={24}
-                    color={COLORS.primary}
-                    strokeWidth={2}
-                  />
-                </Pressable>
-                <Pressable
                   onPress={() => setResetModal(true)}
                   style={{
                     padding: 8,
@@ -125,7 +108,7 @@ export default function TabsLayout() {
       <Modal
         visible={securityModal}
         animationType="slide"
-        presentationStyle="pageSheet"
+        presentationStyle="overFullScreen"
         onRequestClose={() => setSecurityModal(false)}
       >
         <View style={{ flex: 1 }}>

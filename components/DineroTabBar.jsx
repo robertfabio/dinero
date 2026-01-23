@@ -18,8 +18,8 @@ const TAB_BUTTON_SIZE = 56;
 const SPACING = 4;
 
 const SPRING_CONFIG = {
-  damping: 12,
-  stiffness: 100,
+  damping: 200,
+  stiffness: 5000,
 };
 
 function TabIcon({ routeName, isFocused }) {
@@ -55,7 +55,7 @@ function TabIcon({ routeName, isFocused }) {
   const animatedStyle = useAnimatedStyle(() => {
     return {
       opacity: interpolate(progress.value, [0, 1], [0.5, 1]),
-      transform: [{ scale: interpolate(progress.value, [0, 1], [1, 1.1]) }],
+      transform: [{ scale: interpolate(progress.value, [0, 0.5], [1, 1.1]) }],
     };
   });
 

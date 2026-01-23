@@ -1,5 +1,5 @@
 import { useContext, useRef, useState } from "react";
-import { Alert, ScrollView, View } from "react-native";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { categories } from "../constants/categories";
 import { DineroContext } from "../context/GlobalState";
@@ -17,7 +17,7 @@ const initialFormState = {
   category: "income",
 };
 
-export default function AddTransactionScreen({ onSuccess }) {
+export default function AddTransactionScreen({ onSuccess, modal = false }) {
   const [form, setForm] = useState(initialFormState);
   const [transactions, setTransactions] = useContext(DineroContext);
   const valueInputRef = useRef();
@@ -60,6 +60,76 @@ export default function AddTransactionScreen({ onSuccess }) {
     Alert.alert("Sucesso", "Transação adicionada com sucesso!");
     onSuccess?.();
   };
+
+  if (modal) {
+    return (
+      <View style={modalStyles.modalInner}>
+        <View style={GlobalStyles.Content}>
+          <View>
+            <View style={GlobalStyles.Divider}>
+              <DineroInput
+                label={"Descrição da transação"}
+                value={form.description}
+                returnKeyType="next"
+                onSubmitEditing={() => valueInputRef.current.focus()}
+                placeholder="Descrição"
+                onChangeText={(text) => setForm({ ...form, description: text })}
+              />
+              <DineroInput
+                label="Valor da transação"
+                ref={valueInputRef}
+                value={form.value.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+                placeholder="Valor (R$)"
+                keyboardType="numeric"
+                placeholderTextColor={THEME.textSecondary}
+                onChangeText={handleCurrencyChange}
+              />
+              <DineroDatePicker
+                label="Data da transação"
+                value={form.date}
+                onChange={(date) => {
+                  const formatted = `${String(date.getDate()).padStart(2, "0")}/${String(
+                    date.getMonth() + 1,
+                  ).padStart(2, "0")}/${date.getFullYear()}`;
+                  setForm({
+                    ...form,
+                    date: formatted,
+                    dateObject: date.toISOString(),
+                  });
+                }}
+                placeholder="Selecione a data"
+              />
+              <DineroPicker
+                label="Categoria"
+                value={form.category}
+                options={Object.keys(categories).map((key) => ({
+                  label: categories[key].displayName,
+                  value: key,
+                  icon: categories[key].icon,
+                  background: categories[key].background,
+                }))}
+                onSelect={(item) => setForm({ ...form, category: item.value })}
+                placeholder="Selecione uma categoria"
+              />
+            </View>
+            <View style={{ marginTop: 4 }}>
+              <DineroButton
+                useParticles={true}
+                initialFaceColor={THEME.text}
+                initialShadowColor="#9E9E9E"
+                initialTextColor={THEME.background}
+                title={"Salvar Transação"}
+                onPress={AddTransaction}
+              />
+            </View>
+          </View>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={[GlobalStyles.contentContainer, { padding: 14 }]}>
@@ -129,3 +199,10 @@ export default function AddTransactionScreen({ onSuccess }) {
     </SafeAreaView>
   );
 }
+
+const modalStyles = StyleSheet.create({
+  modalInner: {
+    padding: 16,
+    maxHeight: "80%",
+  },
+});

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import AddTransactionScreen from "../../components/add-transaction";
@@ -103,20 +104,33 @@ export default function TransactionScreen() {
       <Modal
         visible={addModalVisible}
         animationType="slide"
-        presentationStyle="pageSheet"
+        transparent={true}
+        presentationStyle="overFullScreen"
         onRequestClose={() => setAddModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Nova Transação</Text>
-            <TouchableOpacity
-              onPress={() => setAddModalVisible(false)}
-              style={styles.closeButton}
-            >
-              <LucideIcons.X size={24} color={THEME.primary} strokeWidth={3} />
-            </TouchableOpacity>
+        <TouchableWithoutFeedback onPress={() => setAddModalVisible(false)}>
+          <View style={styles.modalOverlay} />
+        </TouchableWithoutFeedback>
+        <View style={styles.centeredView} pointerEvents="box-none">
+          <View style={styles.modalCard}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Nova Transação</Text>
+              <TouchableOpacity
+                onPress={() => setAddModalVisible(false)}
+                style={styles.closeButton}
+              >
+                <LucideIcons.X
+                  size={24}
+                  color={THEME.primary}
+                  strokeWidth={4}
+                />
+              </TouchableOpacity>
+            </View>
+            <AddTransactionScreen
+              onSuccess={() => setAddModalVisible(false)}
+              modal
+            />
           </View>
-          <AddTransactionScreen onSuccess={() => setAddModalVisible(false)} />
         </View>
       </Modal>
 
@@ -151,46 +165,48 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: COLORS.screenBg,
-  },
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingTop: 60,
+    paddingTop: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.1)",
+    borderBottomColor: "rgba(255, 255, 255, 0.08)",
   },
   modalTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 18,
+    fontWeight: "700",
     color: COLORS.text,
   },
-  // Updated close button with 3D appearance
   closeButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: THEME.secondary,
-    alignItems: "center",
+    padding: 8,
+  },
+  modalOverlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0,0,0,0.45)",
+  },
+  centeredView: {
+    flex: 1,
     justifyContent: "center",
-    padding: 0,
-    // top highlight (subtle)
-    borderTopWidth: 1,
-    borderTopColor: "rgba(255,255,255,0.22)",
-    // heavier bottom edge to simulate depth
-    borderBottomWidth: 4,
-    borderBottomColor: "rgba(0,0,0,0.28)",
-    // cast shadow for raised look
+    alignItems: "center",
+    paddingHorizontal: 16,
+  },
+  modalCard: {
+    width: "100%",
+    maxWidth: 720,
+    maxHeight: "80%",
+    borderRadius: 12,
+    backgroundColor: COLORS.screenBg,
+    overflow: "hidden",
+    elevation: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.28,
-    shadowRadius: 6.27,
-    elevation: 8,
-    // slight upward shift so the shadow feels natural
-    transform: [{ translateY: -2 }],
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
   },
 });

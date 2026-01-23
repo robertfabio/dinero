@@ -5,6 +5,7 @@ import * as Sharing from "expo-sharing";
 import {
   useCallback,
   useContext,
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -23,16 +24,18 @@ import AnimatedCard from "../../components/AnimatedCard";
 import AnimatedPieChart from "../../components/AnimatedPieChart";
 import CategoryListItem from "../../components/CategoryListItem";
 import DineroButton from "../../components/DineroButton";
+import GoalsManager from "../../components/GoalsManager";
 import PeriodFilter from "../../components/PeriodFilter";
 import QuickInsights from "../../components/QuickInsights";
-import SavingsGoal from "../../components/SavingsGoal";
 import StatCard from "../../components/StatCard";
 import SummaryCard from "../../components/SummaryCard";
+import TransactionCalendar from "../../components/TransactionCalendar";
 import { DineroContext } from "../../context/GlobalState";
 import { usePeriodComparison } from "../../hooks/usePeriodComparison";
 import { useSummaryData } from "../../hooks/useSummaryData";
 import { COLORS, GlobalStyles } from "../../styles/globalStyles";
 import { generatePDFContent } from "../../utils/pdfGenerator";
+import { storageUtils } from "../../utils/storage";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -89,11 +92,37 @@ export default function SumaryScreen() {
   const [period, setPeriod] = useState("all");
   const [isExporting, setIsExporting] = useState(false);
   const [showDetails, setShowDetails] = useState(true);
+  const [currentGoal, setCurrentGoal] = useState(null);
   const exportButtonRef = useRef();
   const navigation = useNavigation();
 
   const summary = useSummaryData(transactions, period);
   const comparison = usePeriodComparison(transactions, period);
+
+  // Load goal from storage
+  useEffect(() => {
+    const loadGoal = async () => {
+      try {
+        const savedGoal = await storageUtils.getItem("@dinero:goal");
+        if (savedGoal) {
+          setCurrentGoal(JSON.parse(savedGoal));
+        }
+      } catch (error) {
+        console.error("Error loading goal:", error);
+      }
+    };
+    loadGoal();
+  }, []);
+
+  // Save goal to storage
+  const handleGoalChange = async (goal) => {
+    setCurrentGoal(goal);
+    try {
+      await storageUtils.setItem("@dinero:goal", JSON.stringify(goal));
+    } catch (error) {
+      console.error("Error saving goal:", error);
+    }
+  };
 
   const shareText = useCallback(async () => {
     const text = `Meu Resumo Financeiro - Dinero\n\nReceitas: ${summary.income.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
@@ -229,7 +258,11 @@ export default function SumaryScreen() {
 
         {summary.balance > 0 && (
           <AnimatedCard delay={200} style={{ marginTop: 16 }}>
-            <SavingsGoal balance={summary.balance} goal={5000} />
+            <GoalsManager
+              balance={summary.balance}
+              currentGoal={currentGoal}
+              onGoalChange={handleGoalChange}
+            />
           </AnimatedCard>
         )}
 
@@ -238,6 +271,10 @@ export default function SumaryScreen() {
             summary={summary}
             categoryData={summary.categoryData}
           />
+        </AnimatedCard>
+
+        <AnimatedCard delay={350} style={{ marginTop: 16 }}>
+          <TransactionCalendar transactions={transactions} />
         </AnimatedCard>
 
         {summary.chartData.length > 0 && (

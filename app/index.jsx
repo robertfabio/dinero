@@ -1,7 +1,8 @@
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import { Redirect, useRouter } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Dimensions,
   Linking,
   StatusBar,
@@ -20,7 +21,10 @@ import Animated, {
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DineroButton from "../components/DineroButton";
-import { THEME } from "../styles/globalStyles";
+import { COLORS, THEME } from "../styles/globalStyles";
+import { storageUtils } from "../utils/storage";
+
+const ONBOARDING_KEY = "@dinero:onboarding_completed";
 
 const { width } = Dimensions.get("window");
 
@@ -174,6 +178,20 @@ const WelcomeScreen = () => {
   const x = useSharedValue(0);
   const flatListRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    const checkOnboarding = () => {
+      const completed = storageUtils.getItem(ONBOARDING_KEY);
+      if (completed === "true") {
+        setShouldRedirect(true);
+      } else {
+        setIsChecking(false);
+      }
+    };
+    checkOnboarding();
+  }, []);
 
   const scrollHandler = useAnimatedScrollHandler(
     {
@@ -189,18 +207,37 @@ const WelcomeScreen = () => {
     [],
   );
 
+  const completeOnboarding = () => {
+    storageUtils.setItem(ONBOARDING_KEY, "true");
+    router.replace("/(tabs)/home");
+  };
+
   const handleNext = () => {
     const nextIndex = Math.round(x.value / width) + 1;
     if (nextIndex < SLIDES.length) {
       flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
     } else {
-      router.replace("/(tabs)");
+      completeOnboarding();
     }
   };
 
   const handleSkip = () => {
-    router.replace("/(tabs)");
+    completeOnboarding();
   };
+
+  // Redirect se já completou onboarding
+  if (shouldRedirect) {
+    return <Redirect href="/(tabs)/home" />;
+  }
+
+  // Loading state
+  if (isChecking) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -260,6 +297,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: THEME.background,
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: COLORS.screenBg,
+    justifyContent: "center",
+    alignItems: "center",
   },
   header: {
     flexDirection: "row",
