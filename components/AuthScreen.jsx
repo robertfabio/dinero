@@ -1,12 +1,12 @@
 import * as LucideIcons from "lucide-react-native";
 import { useEffect, useState } from "react";
 import {
-    Alert,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import DineroButton from "../components/DineroButton";
 import { useAuth } from "../context/AuthContext";
@@ -102,7 +102,7 @@ export default function AuthScreen() {
               placeholderTextColor={COLORS.textLight}
               secureTextEntry
               keyboardType="number-pad"
-              maxLength={6}
+              maxLength={4}
             />
           </View>
 
@@ -121,7 +121,7 @@ export default function AuthScreen() {
                 placeholderTextColor={COLORS.textLight}
                 secureTextEntry
                 keyboardType="number-pad"
-                maxLength={6}
+                maxLength={4}
               />
             </View>
           )}

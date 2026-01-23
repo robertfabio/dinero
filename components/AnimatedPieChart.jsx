@@ -22,7 +22,7 @@ export default function AnimatedPieChart({ data, size = 200 }) {
   }, [data, progress]);
 
   const total = data.reduce((sum, item) => sum + item.population, 0);
-  let currentAngle = -Math.PI / 2; // Start at top
+  let currentAngle = -Math.PI / 2; 
 
   const paths = data.map((item, index) => {
     const percentage = item.population / total;

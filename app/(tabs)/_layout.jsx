@@ -69,19 +69,8 @@ export default function TabsLayout() {
         }}
       >
         <Tabs.Screen name="home" options={{ headerShown: false }} />
-
         <Tabs.Screen
-          name="add-transaction"
-          options={{ title: "Adicionar Transação" }}
-        />
-        <Tabs.Screen
-          name="sumary"
-          options={{
-            title: "Resumo Financeiro",
-          }}
-        />
-        <Tabs.Screen
-          name="index"
+          name="transactions"
           options={{
             title: "Transações",
             headerRight: () => (
@@ -123,6 +112,14 @@ export default function TabsLayout() {
             ),
           }}
         />
+        <Tabs.Screen
+          name="sumary"
+          options={{
+            title: "Resumo Financeiro",
+          }}
+        />
+
+        <Tabs.Screen name="market" options={{ title: "Adicionar Transação" }} />
       </Tabs>
 
       <Modal

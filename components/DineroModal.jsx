@@ -1,12 +1,12 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { useEffect, useRef } from "react";
 import {
-    Animated,
-    Modal,
-    Pressable,
-    Text,
-    TouchableOpacity,
-    View,
+  Animated,
+  Modal,
+  Pressable,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { COLORS, GlobalStyles, METRICS } from "../styles/globalStyles";
 import DineroButton from "./DineroButton";
@@ -43,7 +43,7 @@ export default function DineroModal({
       scaleAnim.setValue(0);
       fadeAnim.setValue(0);
     }
-  }, [visible]);
+  }, [visible, scaleAnim, fadeAnim]);
 
   const icons = {
     warning: { name: "warning", color: COLORS.danger },

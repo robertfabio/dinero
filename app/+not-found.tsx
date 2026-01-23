@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 export default function ModalScreen() {
   return (
     <View style={styles.container}>
-      <Link href="/" style={styles.link}>Go to Home Screen</Link>
+      <Link href="/home" style={styles.link}>Go to Home Screen</Link>
     </View>
   );
 }

@@ -179,7 +179,11 @@ const WelcomeScreen = () => {
     {
       onScroll: (event) => {
         x.value = event.contentOffset.x;
-        runOnJS(setCurrentIndex)(Math.round(event.contentOffset.x / width));
+      },
+      onMomentumEnd: (event) => {
+        "worklet";
+        const index = Math.round(event.contentOffset.x / width);
+        runOnJS(setCurrentIndex)(index);
       },
     },
     [],

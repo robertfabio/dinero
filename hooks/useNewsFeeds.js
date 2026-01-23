@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 const RSS_FEEDS = [
   "https://www.infomoney.com.br/feed/",
   "https://br.investing.com/rss/news.rss",
+  "https://exame.com/feed/",
+  "http://rss.uol.com.br/feed/economia.xml",
+  // TODO: add Valor, G1, Estadão, Reuters feeds after validating stable RSS endpoints
 ];
 
 export function useNewsFeeds() {
@@ -81,9 +84,21 @@ export function useNewsFeeds() {
               imageUrl,
               pubDate:
                 item.pubDate || item.published || new Date().toISOString(),
-              source: feedUrl.includes("infomoney")
-                ? "InfoMoney"
-                : "Investing.com",
+              source: (() => {
+                if (feedUrl.includes("infomoney")) return "InfoMoney";
+                if (feedUrl.includes("investing.com")) return "Investing.com";
+                if (feedUrl.includes("exame.com")) return "Exame";
+                if (
+                  feedUrl.includes("uol.com.br") ||
+                  feedUrl.includes("rss.uol.com.br")
+                )
+                  return "UOL";
+                try {
+                  return new URL(feedUrl).hostname.replace(/^www\./, "");
+                } catch (e) {
+                  return feedUrl;
+                }
+              })(),
             };
           });
 

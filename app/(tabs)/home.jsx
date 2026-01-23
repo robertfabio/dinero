@@ -59,16 +59,13 @@ export default function Home() {
     setRefreshing(false);
   };
 
-  // Combine data: transactions + news
   const combinedData = useMemo(() => {
     const items = [];
 
-    // Add recent transactions
     recentTransactions.forEach((transaction) => {
       items.push({ type: "transaction", data: transaction });
     });
 
-    // Add news if enabled
     if (showNews) {
       news.slice(0, 5).forEach((newsItem) => {
         items.push({ type: "news", data: newsItem });
@@ -128,7 +125,6 @@ export default function Home() {
         }
         ListHeaderComponent={
           <View>
-            {/* Balance Card */}
             <View style={[GlobalStyles.duoContainer, styles.balanceCard]}>
               <View style={styles.balanceHeader}>
                 <MaterialIcons
@@ -152,8 +148,6 @@ export default function Home() {
                 duration={1200}
               />
             </View>
-
-            {/* Stats Grid */}
             <View style={styles.statsGrid}>
               <StatCard
                 label="Receitas"
@@ -179,9 +173,8 @@ export default function Home() {
               />
             </View>
 
-            {/* Quick Insights */}
             {transactions.length > 0 && (
-              <View style={{ marginBottom: 20 }}>
+              <View>
                 <QuickInsights
                   summary={summary}
                   categoryData={summary.categoryData}
@@ -189,7 +182,6 @@ export default function Home() {
               </View>
             )}
 
-            {/* Recent Transactions Header */}
             {recentTransactions.length > 0 && (
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Transações Recentes</Text>
@@ -201,7 +193,6 @@ export default function Home() {
               </View>
             )}
 
-            {/* News Section Header */}
             {news.length > 0 && (
               <View style={styles.newsHeaderContainer}>
                 <View style={styles.sectionHeader}>

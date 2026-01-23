@@ -1,6 +1,12 @@
 import * as LucideIcons from "lucide-react-native";
-import { useEffect, useMemo, useRef } from "react";
-import { Animated, StyleSheet, TouchableOpacity, View } from "react-native";
+import { useMemo } from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useDerivedValue,
+  withSpring,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const COLORS = {
@@ -11,57 +17,75 @@ const COLORS = {
 const TAB_BUTTON_SIZE = 56;
 const SPACING = 4;
 
+const SPRING_CONFIG = {
+  damping: 12,
+  stiffness: 100,
+};
+
+function TabIcon({ routeName, isFocused }) {
+  let IconComponent;
+  if (routeName === "home") IconComponent = LucideIcons.Home;
+  else if (routeName === "transactions") IconComponent = LucideIcons.DollarSign;
+  else if (routeName === "sumary") IconComponent = LucideIcons.ScrollText;
+  else IconComponent = LucideIcons.ShoppingBag;
+
+  if (!IconComponent) {
+    const FallbackIcon = ({ size = 24, color = COLORS.inactive }) => (
+      <View
+        style={{
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          backgroundColor: color,
+          opacity: 0.9,
+        }}
+      />
+    );
+    FallbackIcon.displayName = "DineroTabBarFallbackIcon";
+    IconComponent = FallbackIcon;
+    console.warn(
+      `DineroTabBar: missing icon for route "${routeName}", using fallback.`,
+    );
+  }
+
+  const progress = useDerivedValue(() => {
+    return withSpring(isFocused ? 1 : 0, SPRING_CONFIG);
+  }, [isFocused]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(progress.value, [0, 1], [0.5, 1]),
+      transform: [{ scale: interpolate(progress.value, [0, 1], [1, 1.1]) }],
+    };
+  });
+
+  return (
+    <Animated.View style={[styles.iconWrapper, animatedStyle]}>
+      <IconComponent
+        size={24}
+        color={isFocused ? COLORS.primary : COLORS.inactive}
+        strokeWidth={isFocused ? 2.5 : 2}
+      />
+    </Animated.View>
+  );
+}
+
 export default function DineroTabBar({ state, descriptors, navigation }) {
   const insets = useSafeAreaInsets();
   const routeCount = state.routes.length;
 
-  const animatedValues = useRef(
-    state.routes.map(() => new Animated.Value(0)),
-  ).current;
-
-  const slideAnim = useRef(new Animated.Value(state.index)).current;
-
-  const { tabBarWidth, inputRange, outputRange } = useMemo(() => {
-    const width = routeCount * TAB_BUTTON_SIZE + SPACING * 2;
-    const input = Array.from({ length: routeCount }, (_, i) => i);
-    const output = Array.from(
-      { length: routeCount },
-      (_, i) => i * TAB_BUTTON_SIZE,
-    );
-    return { tabBarWidth: width, inputRange: input, outputRange: output };
+  const tabBarWidth = useMemo(() => {
+    return routeCount * TAB_BUTTON_SIZE + SPACING * 2;
   }, [routeCount]);
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.spring(slideAnim, {
-        toValue: state.index,
-        useNativeDriver: false,
-        tension: 40,
-        friction: 8,
-      }),
-      Animated.spring(animatedValues[state.index], {
-        toValue: 1,
-        useNativeDriver: false,
-        tension: 40,
-        friction: 8,
-      }),
-    ]).start();
-
-    animatedValues.forEach((anim, index) => {
-      if (index !== state.index) {
-        Animated.spring(anim, {
-          toValue: 0,
-          useNativeDriver: false,
-          tension: 40,
-          friction: 8,
-        }).start();
-      }
-    });
-  }, [state.index, animatedValues, slideAnim]);
-
-  const translateX = slideAnim.interpolate({
-    inputRange,
-    outputRange,
+  const indicatorStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: withSpring(state.index * TAB_BUTTON_SIZE, SPRING_CONFIG),
+        },
+      ],
+    };
   });
 
   return (
@@ -71,21 +95,13 @@ export default function DineroTabBar({ state, descriptors, navigation }) {
         { paddingBottom: Math.max(insets.bottom, 8), width: tabBarWidth },
       ]}
     >
-      <Animated.View
-        style={[
-          styles.slidingBackground,
-          {
-            transform: [{ translateX }],
-          },
-        ]}
-      />
+      <Animated.View style={[styles.slidingBackground, indicatorStyle]} />
       <View
         style={[styles.backgroundBar, { width: tabBarWidth - SPACING * 2 }]}
       />
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;
-        const animValue = animatedValues[index];
 
         const onPress = () => {
           const event = navigation.emit({
@@ -99,43 +115,6 @@ export default function DineroTabBar({ state, descriptors, navigation }) {
           }
         };
 
-        let IconComponent;
-        if (route.name === "home") IconComponent = LucideIcons.Home;
-        else if (route.name === "add-transaction")
-          IconComponent = LucideIcons.DollarSign;
-        else if (route.name === "sumary")
-          IconComponent = LucideIcons.ScrollText;
-        else IconComponent = LucideIcons.ShoppingBag;
-
-        if (!IconComponent) {
-          const FallbackIcon = ({ size = 24, color = COLORS.inactive }) => (
-            <View
-              style={{
-                width: size,
-                height: size,
-                borderRadius: size / 2,
-                backgroundColor: color,
-                opacity: 0.9,
-              }}
-            />
-          );
-          FallbackIcon.displayName = "DineroTabBarFallbackIcon";
-          IconComponent = FallbackIcon;
-          console.warn(
-            `DineroTabBar: missing icon for route "${route.name}", using fallback.`,
-          );
-        }
-
-        const scale = animValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: [1, 1.1],
-        });
-
-        const iconOpacity = animValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0.5, 1],
-        });
-
         return (
           <TouchableOpacity
             key={route.key}
@@ -147,21 +126,7 @@ export default function DineroTabBar({ state, descriptors, navigation }) {
             style={styles.tabButton}
             activeOpacity={0.7}
           >
-            <Animated.View
-              style={[
-                styles.iconWrapper,
-                {
-                  opacity: iconOpacity,
-                  transform: [{ scale }],
-                },
-              ]}
-            >
-              <IconComponent
-                size={24}
-                color={isFocused ? COLORS.primary : COLORS.inactive}
-                strokeWidth={isFocused ? 2.5 : 2}
-              />
-            </Animated.View>
+            <TabIcon routeName={route.name} isFocused={isFocused} />
           </TouchableOpacity>
         );
       })}

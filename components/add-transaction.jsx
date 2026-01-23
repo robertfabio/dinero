@@ -1,14 +1,14 @@
 import { useContext, useRef, useState } from "react";
 import { Alert, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import DineroButton from "../../components/DineroButton";
-import DineroDatePicker from "../../components/DineroDatePicker";
-import DineroInput from "../../components/DineroInput";
-import DineroPicker from "../../components/DineroPicker";
-import { categories } from "../../constants/categories";
-import { DineroContext } from "../../context/GlobalState";
-import { GlobalStyles, THEME } from "../../styles/globalStyles";
-import { storageUtils } from "../../utils/storage";
+import { categories } from "../constants/categories";
+import { DineroContext } from "../context/GlobalState";
+import { GlobalStyles, THEME } from "../styles/globalStyles";
+import { storageUtils } from "../utils/storage";
+import DineroButton from "./DineroButton";
+import DineroDatePicker from "./DineroDatePicker";
+import DineroInput from "./DineroInput";
+import DineroPicker from "./DineroPicker";
 
 const initialFormState = {
   description: "",
@@ -17,7 +17,7 @@ const initialFormState = {
   category: "income",
 };
 
-export default function AddTransactionScreen() {
+export default function AddTransactionScreen({ onSuccess }) {
   const [form, setForm] = useState(initialFormState);
   const [transactions, setTransactions] = useContext(DineroContext);
   const valueInputRef = useRef();
@@ -51,17 +51,18 @@ export default function AddTransactionScreen() {
       return;
     }
 
-    const newTransaction = { id: transactions.length + 1, ...form };
+    const newTransaction = { id: Date.now(), ...form };
     const updatedTransactions = [...transactions, newTransaction];
     console.log("Transaction added:", newTransaction);
     setTransactions(updatedTransactions);
     setForm(initialFormState);
     setASyncStorage(updatedTransactions);
     Alert.alert("Sucesso", "Transação adicionada com sucesso!");
+    onSuccess?.();
   };
 
   return (
-    <SafeAreaView style={[GlobalStyles.ScreenContainer, { padding: 14 }]}>
+    <SafeAreaView style={[GlobalStyles.contentContainer, { padding: 14 }]}>
       <ScrollView contentContainerStyle={GlobalStyles.Content}>
         <View>
           <View style={GlobalStyles.Divider}>
@@ -85,43 +86,6 @@ export default function AddTransactionScreen() {
               placeholderTextColor={THEME.textSecondary}
               onChangeText={handleCurrencyChange}
             />
-            {/*<View style={{ flexDirection: "row", alignItems: "center" }}>
-              <TextInput
-                value={form.date}
-                placeholder="Data (DD/MM/AAAA)"
-                editable={false}
-                style={[GlobalStyles.Input, { flex: 1 }]}
-                placeholderTextColor={THEME.textSecondary}
-                onFocus={showDatePicker}
-              />
-              <Pressable
-                onPress={showDatePicker}
-                style={{
-                  borderRadius: 8,
-                  borderColor: THEME.text,
-                  borderWidth: 1,
-                  marginLeft: 8,
-                  padding: 3,
-                }}
-              >
-                <EvilIcons name="calendar" size={38} color={THEME.text} />
-              </Pressable>
-            </View>
-            <DateTimePicker
-              isVisible={isDatePickerVisible}
-              mode="date"
-              date={form.dateObject ? new Date(form.dateObject) : new Date()}
-              onConfirm={handleConfirmDate}
-              onCancel={hideDatePicker}
-            />}
-            {/*<TextInput
-              value={form.category}
-              placeholder="Despesa"
-              style={GlobalStyles.Input}
-              placeholderTextColor={THEME.textSecondary}
-              onChangeText={(text) => setForm({ ...form, category: text })}
-            />
-          </View>*/}
             <DineroDatePicker
               label="Data da transação"
               value={form.date}

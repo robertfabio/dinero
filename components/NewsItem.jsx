@@ -1,18 +1,21 @@
 import { Image } from "expo-image";
 import * as WebBrowser from "expo-web-browser";
-import * as LucideIcons from "lucide-react-native";
+import { ChevronRight, Newspaper } from "lucide-react-native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS, GlobalStyles } from "../styles/globalStyles";
 
 export default function NewsItem({ item }) {
   const handlePress = async () => {
     try {
-      await WebBrowser.openBrowserAsync(item.link, {
-        presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
-        controlsColor: COLORS.primary,
-      });
+      if (item.link) {
+        await WebBrowser.openBrowserAsync(item.link, {
+          presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
+          controlsColor: COLORS.primary,
+          toolbarColor: COLORS.background,
+        });
+      }
     } catch (error) {
-      console.error("Error opening browser:", error);
+      console.error(error);
     }
   };
 
@@ -25,36 +28,41 @@ export default function NewsItem({ item }) {
         pressed && styles.pressed,
       ]}
     >
-      <View style={styles.content}>
-        {item.imageUrl && (
-          <Image
-            source={{ uri: item.imageUrl }}
-            style={styles.image}
-            contentFit="cover"
-            placeholder={require("../assets/icon.jpg")}
-            transition={200}
-          />
-        )}
-        <View style={styles.textContainer}>
-          <View style={styles.header}>
-            <View style={styles.sourceBadge}>
-              <LucideIcons.Newspaper
-                size={12}
-                color={COLORS.primary}
-                strokeWidth={2}
-              />
-              <Text style={styles.sourceText}>{item.source}</Text>
-            </View>
+      <View style={styles.imageContainer}>
+        <Image
+          source={
+            item.imageUrl
+              ? { uri: item.imageUrl }
+              : require("../assets/images/teste.png")
+          }
+          style={styles.image}
+          contentFit="cover"
+          transition={200}
+        />
+      </View>
+
+      <View style={styles.contentContainer}>
+        <View style={styles.header}>
+          <View style={styles.badge}>
+            <Newspaper size={10} color={COLORS.primary} strokeWidth={2.5} />
+            <Text style={styles.badgeText}>{item.source || "NOTÍCIA"}</Text>
           </View>
-          <Text style={styles.title} numberOfLines={2}>
-            {item.title}
-          </Text>
-          {item.description && (
-            <Text style={styles.description} numberOfLines={2}>
-              {item.description}
-            </Text>
-          )}
+          <Text style={styles.dateText}>{item.pubDate || "Hoje"}</Text>
         </View>
+
+        <Text style={styles.title} numberOfLines={2}>
+          {item.title}
+        </Text>
+
+        {item.description && (
+          <Text style={styles.description} numberOfLines={1}>
+            {item.description}
+          </Text>
+        )}
+      </View>
+
+      <View style={styles.actionContainer}>
+        <ChevronRight size={20} color={COLORS.neutralDark} />
       </View>
     </Pressable>
   );
@@ -62,57 +70,77 @@ export default function NewsItem({ item }) {
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 12,
-    padding: 0,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    flexDirection: "row",
     overflow: "hidden",
+    marginBottom: 16,
+    height: 110,
+    backgroundColor: COLORS.background,
   },
   pressed: {
-    opacity: 0.7,
+    backgroundColor: "#F5F5F5",
+    transform: [{ scale: 0.98 }],
   },
-  content: {
-    flexDirection: "row",
+  imageContainer: {
+    width: 100,
+    height: "100%",
+    borderRightWidth: 2,
+    borderRightColor: COLORS.neutral,
   },
   image: {
-    width: 100,
-    height: 100,
-    borderTopLeftRadius: 14,
-    borderBottomLeftRadius: 14,
+    flex: 1,
+    width: "100%",
+    height: "100%",
   },
-  textContainer: {
+  contentContainer: {
     flex: 1,
     padding: 12,
     justifyContent: "space-between",
   },
   header: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 6,
   },
-  sourceBadge: {
+  badge: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    backgroundColor: "rgba(28, 176, 246, 0.1)",
-    borderRadius: 6,
     gap: 4,
+    backgroundColor: "rgba(28, 176, 246, 0.1)",
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 6,
   },
-  sourceText: {
+  badgeText: {
     fontSize: 10,
-    fontWeight: "700",
+    fontWeight: "800",
     color: COLORS.primary,
     textTransform: "uppercase",
   },
+  dateText: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: COLORS.textLight,
+  },
   title: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "800",
     color: COLORS.text,
-    lineHeight: 18,
-    marginBottom: 4,
+    lineHeight: 20,
+    marginTop: 4,
   },
   description: {
     fontSize: 12,
+    fontWeight: "500",
     color: COLORS.textLight,
-    lineHeight: 16,
+  },
+  actionContainer: {
+    width: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    borderLeftWidth: 2,
+    borderLeftColor: COLORS.neutral,
+    backgroundColor: "#FAFAFA",
   },
 });
