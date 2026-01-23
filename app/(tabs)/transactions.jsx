@@ -113,11 +113,7 @@ export default function TransactionScreen() {
               onPress={() => setAddModalVisible(false)}
               style={styles.closeButton}
             >
-              <LucideIcons.X
-                size={24}
-                color={THEME.primary}
-                strokeWidth={3}
-              />
+              <LucideIcons.X size={24} color={THEME.primary} strokeWidth={3} />
             </TouchableOpacity>
           </View>
           <AddTransactionScreen onSuccess={() => setAddModalVisible(false)} />
