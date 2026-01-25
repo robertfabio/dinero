@@ -21,12 +21,14 @@ import StatCard from "../../components/summary/StatCard";
 import TransactionItem from "../../components/transactions/TransactionItem";
 import AnimatedNumber from "../../components/ui/AnimatedNumber";
 import { DineroContext } from "../../context/GlobalState";
+import { useLanguage } from "../../context/LanguageContext";
 import { useCoinData } from "../../hooks/useCoinData";
 import { useNewsFeeds } from "../../hooks/useNewsFeeds";
 import { COLORS, GlobalStyles } from "../../styles/globalStyles";
 
 export default function Home() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [transactions] = useContext(DineroContext);
   const { news, loading: newsLoading, refresh: refreshNews } = useNewsFeeds();
   const {
@@ -75,8 +77,8 @@ export default function Home() {
 
       <View style={styles.header}>
         <View>
-          <Text style={styles.greeting}>Olá! </Text>
-          <Text style={styles.subtitle}>Seu resumo financeiro</Text>
+          <Text style={styles.greeting}>{t("home.greeting")}</Text>
+          <Text style={styles.subtitle}>{t("home.subtitle")}</Text>
         </View>
         <TouchableOpacity
           onPress={() => router.navigate("/settings")}
@@ -116,7 +118,9 @@ export default function Home() {
                   size={28}
                   color={COLORS.primary}
                 />
-                <Text style={styles.balanceLabel}>Saldo Atual</Text>
+                <Text style={styles.balanceLabel}>
+                  {t("home.currentBalance")}
+                </Text>
               </View>
               <AnimatedNumber
                 value={summary.balance}
@@ -203,7 +207,7 @@ export default function Home() {
                       strokeWidth={2}
                     />
                     <Text style={[styles.sectionTitle, { marginLeft: 6 }]}>
-                      Notícias Financeiras
+                      {t("home.financialNews")}
                     </Text>
                   </View>
                   <TouchableOpacity
@@ -246,10 +250,9 @@ export default function Home() {
                 color={COLORS.textLight}
                 strokeWidth={1.5}
               />
-              <Text style={styles.emptyTitle}>Nenhuma transação ainda</Text>
+              <Text style={styles.emptyTitle}>{t("home.noTransactions")}</Text>
               <Text style={styles.emptySubtitle}>
-                Comece adicionando sua primeira transação usando o botão +
-                abaixo
+                {t("home.addFirstTransaction")}
               </Text>
             </View>
           </View>

@@ -1,21 +1,22 @@
 import * as LucideIcons from "lucide-react-native";
 import { useCallback, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    FlatList,
-    Linking,
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Linking,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import DineroButton from "../../components/DineroButton";
+import DineroButton from "../../components/ui/DineroButton";
+import { useLanguage } from "../../context/LanguageContext";
 import { useMarketDeals } from "../../hooks/useMarketDeals";
 import { COLORS, GlobalStyles } from "../../styles/globalStyles";
 
@@ -130,6 +131,7 @@ const WishlistItem = ({ item, onRemove, onOpen }) => {
 };
 
 export default function Market() {
+  const { t } = useLanguage();
   const {
     deals,
     wishlist,
@@ -229,7 +231,7 @@ export default function Market() {
               activeTab === "deals" && styles.tabTextActive,
             ]}
           >
-            Ofertas
+            {t("market.deals")}
           </Text>
         </TouchableOpacity>
 

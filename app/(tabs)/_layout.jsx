@@ -9,6 +9,7 @@ import DineroTabBar from "../../components/navigation/DineroTabBar";
 import SecuritySettings from "../../components/settings/SecuritySettings";
 import DineroModal from "../../components/ui/DineroModal";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 import { storageUtils } from "../../store/storage";
 import { COLORS } from "../../styles/globalStyles";
 
@@ -16,6 +17,7 @@ export default function TabsLayout() {
   const [resetModal, setResetModal] = useState(false);
   const [securityModal, setSecurityModal] = useState(false);
   const { isAuthenticated, isLoading } = useAuth();
+  const { t } = useLanguage();
 
   const handleResetAll = () => {
     try {
@@ -72,7 +74,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="transactions"
           options={{
-            title: "Transações",
+            title: t("navigation.transactions"),
             headerRight: () => (
               <View style={{ flexDirection: "row", marginRight: 12 }}>
                 <Pressable
@@ -98,11 +100,14 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="sumary"
           options={{
-            title: "Resumo Financeiro",
+            title: t("navigation.summary"),
           }}
         />
 
-        <Tabs.Screen name="market" options={{ title: "Adicionar Transação" }} />
+        <Tabs.Screen
+          name="market"
+          options={{ title: t("transactions.addTransaction") }}
+        />
       </Tabs>
 
       <Modal
@@ -140,10 +145,10 @@ export default function TabsLayout() {
         visible={resetModal}
         onClose={() => setResetModal(false)}
         onConfirm={handleResetAll}
-        title="Resetar Tudo"
-        message="Tem certeza que deseja excluir TODAS as transações? Esta ação é irreversível e todos os dados serão perdidos."
-        confirmText="Resetar Tudo"
-        cancelText="Cancelar"
+        title={t("settings.clearAllData")}
+        message={t("settings.confirmClearData")}
+        confirmText={t("settings.clearAllData")}
+        cancelText={t("common.cancel")}
         type="warning"
       />
     </>

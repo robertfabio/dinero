@@ -2,7 +2,7 @@ import { ChevronRight, Newspaper } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS, GlobalStyles } from "../../styles/globalStyles";
-import DineroImage from "../DineroImage";
+import DineroImage from "../ui/DineroImage";
 import NewsModal from "./NewsModal";
 
 export default function NewsItem({ item }) {

@@ -14,10 +14,12 @@ import AddTransactionScreen from "../../components/transactions/add-transaction"
 import TransactionItem from "../../components/transactions/TransactionItem";
 import DineroModal from "../../components/ui/DineroModal";
 import { DineroContext } from "../../context/GlobalState";
+import { useLanguage } from "../../context/LanguageContext";
 import { storageUtils } from "../../store/storage";
 import { COLORS, GlobalStyles, THEME } from "../../styles/globalStyles";
 
 export default function TransactionScreen() {
+  const { t } = useLanguage();
   const [transactions, setTransactions] = useContext(DineroContext);
   const [deleteModal, setDeleteModal] = useState({ visible: false, id: null });
   const [addModalVisible, setAddModalVisible] = useState(false);
@@ -76,7 +78,7 @@ export default function TransactionScreen() {
                   marginBottom: 8,
                 }}
               >
-                Nada por aqui!
+                {t("transactions.emptyState")}
               </Text>
               <Text
                 style={{
@@ -86,7 +88,7 @@ export default function TransactionScreen() {
                   fontWeight: "600",
                 }}
               >
-                Suas transações aparecerão nesta tela.
+                {t("transactions.emptyDescription")}
               </Text>
             </View>
           </View>
@@ -114,7 +116,9 @@ export default function TransactionScreen() {
         <View style={styles.centeredView} pointerEvents="box-none">
           <View style={styles.modalCard}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Nova Transação</Text>
+              <Text style={styles.modalTitle}>
+                {t("transactions.newTransaction")}
+              </Text>
               <TouchableOpacity
                 onPress={() => setAddModalVisible(false)}
                 style={styles.closeButton}
