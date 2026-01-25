@@ -26,12 +26,17 @@
     "done": "Hecho"
   },
   "auth": {
-    "welcome": "Bienvenido a Dinero",
+    "welcome": "Bienvenido",
+    "createPin": "Crear PIN",
+    "confirmPin": "Confirmar PIN",
+    "enterPinAgain": "Ingrese el PIN nuevamente",
+    "create4DigitPin": "Cree un PIN de 4 dígitos",
+    "enterPinToAccess": "Ingrese su PIN para acceder",
+    "useBiometric": "Usar Biometría",
     "enterPin": "Ingrese su PIN",
     "pinRequired": "PIN requerido para continuar",
     "invalidPin": "PIN inválido",
     "biometricAuth": "Autenticación biométrica",
-    "useBiometric": "Usar biometría",
     "biometricPrompt": "Autentíquese para acceder a la aplicación",
     "biometricFailed": "Error en la autenticación biométrica"
   },

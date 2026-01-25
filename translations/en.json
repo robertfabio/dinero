@@ -26,12 +26,17 @@
     "done": "Done"
   },
   "auth": {
-    "welcome": "Welcome to Dinero",
+    "welcome": "Welcome",
+    "createPin": "Create PIN",
+    "confirmPin": "Confirm PIN",
+    "enterPinAgain": "Enter PIN again",
+    "create4DigitPin": "Create a 4-digit PIN",
+    "enterPinToAccess": "Enter your PIN to access",
+    "useBiometric": "Use Biometric",
     "enterPin": "Enter your PIN",
     "pinRequired": "PIN required to continue",
     "invalidPin": "Invalid PIN",
     "biometricAuth": "Biometric authentication",
-    "useBiometric": "Use biometry",
     "biometricPrompt": "Authenticate to access the app",
     "biometricFailed": "Biometric authentication failed"
   },

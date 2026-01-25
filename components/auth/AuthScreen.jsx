@@ -20,7 +20,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useAuth } from "./../../context/AuthContext";
-import { COLORS } from "./../../styles/globalStyles";
+import { useLanguage } from "./../../context/LanguageContext";
+import { COLORS, GlobalStyles, METRICS } from "./../../styles/globalStyles";
 
 const PinDot = ({ filled, error }) => {
   const scale = useSharedValue(1);
@@ -58,6 +59,7 @@ const PinDot = ({ filled, error }) => {
 };
 
 export default function AuthScreen() {
+  const { t } = useLanguage();
   const {
     hasCredentials,
     biometricAvailable,
@@ -129,16 +131,17 @@ export default function AuthScreen() {
   };
 
   const getTitle = () => {
-    if (isSettingUp) return step === "confirm" ? "CONFIRMAR" : "CRIAR SENHA";
-    return "BEM-VINDO";
+    if (isSettingUp)
+      return step === "confirm" ? t("auth.confirmPin") : t("auth.createPin");
+    return t("auth.welcome");
   };
 
   const getSubtitle = () => {
     if (isSettingUp)
       return step === "confirm"
-        ? "Digite a senha novamente"
-        : "Crie uma senha de 4 dígitos";
-    return "Digite sua senha para entrar";
+        ? t("auth.enterPinAgain")
+        : t("auth.create4DigitPin");
+    return t("auth.enterPinToAccess");
   };
 
   const animatedCardStyle = useAnimatedStyle(() => ({
@@ -148,24 +151,25 @@ export default function AuthScreen() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        <View style={styles.decorativeCircle1} />
-        <View style={styles.decorativeCircle2} />
-
         <Animated.View
-          entering={FadeInDown.duration(800)}
+          entering={FadeInDown.duration(600)}
           style={styles.logoContainer}
         >
           <View style={styles.logoIcon}>
-            <LucideIcons.Wallet size={40} color="white" strokeWidth={2.5} />
+            <LucideIcons.Wallet
+              size={32}
+              color={COLORS.primary}
+              strokeWidth={2.5}
+            />
           </View>
-          <Text style={styles.appName}>DINERO</Text>
+          <Text style={styles.appName}>Dinero</Text>
         </Animated.View>
 
         <Animated.View
-          entering={FadeIn.delay(300)}
+          entering={FadeIn.delay(200)}
           style={[styles.content, animatedCardStyle]}
         >
-          <View style={styles.card}>
+          <View style={[GlobalStyles.duoContainer, styles.card]}>
             <View style={styles.header}>
               <Text style={styles.title}>{getTitle()}</Text>
               <Text style={styles.subtitle}>{getSubtitle()}</Text>
@@ -201,8 +205,12 @@ export default function AuthScreen() {
                   pressed && styles.bioButtonPressed,
                 ]}
               >
-                <LucideIcons.Fingerprint size={24} color={COLORS.primary} />
-                <Text style={styles.bioText}>USAR BIOMETRIA</Text>
+                <LucideIcons.Fingerprint
+                  size={20}
+                  color={COLORS.primary}
+                  strokeWidth={2}
+                />
+                <Text style={styles.bioText}>{t("auth.useBiometric")}</Text>
               </Pressable>
             )}
 
@@ -214,8 +222,9 @@ export default function AuthScreen() {
                   setConfirmPin("");
                   inputRef.current?.focus();
                 }}
+                style={styles.cancelButton}
               >
-                <Text style={styles.cancelText}>CANCELAR</Text>
+                <Text style={styles.cancelText}>{t("common.cancel")}</Text>
               </Pressable>
             )}
           </View>
@@ -228,102 +237,74 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.screenBg,
     justifyContent: "center",
     alignItems: "center",
-    overflow: "hidden",
-  },
-  decorativeCircle1: {
-    position: "absolute",
-    top: -50,
-    left: -50,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: "rgba(255,255,255,0.1)",
-  },
-  decorativeCircle2: {
-    position: "absolute",
-    bottom: -100,
-    right: -20,
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: "rgba(255,255,255,0.1)",
+    paddingHorizontal: 24,
   },
   logoContainer: {
     alignItems: "center",
-    marginBottom: 40,
+    marginBottom: 48,
   },
   logoIcon: {
-    width: 80,
-    height: 80,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    borderRadius: 25,
+    width: 64,
+    height: 64,
+    backgroundColor: COLORS.background,
+    borderRadius: METRICS.radius,
+    borderWidth: METRICS.borderWidth,
+    borderBottomWidth: METRICS.borderBottomHeight,
+    borderColor: COLORS.neutral,
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 3,
-    borderColor: "white",
     marginBottom: 16,
-    transform: [{ rotate: "-5deg" }],
+    ...GlobalStyles.shadow,
   },
   appName: {
-    fontSize: 32,
-    fontWeight: "900",
-    color: "white",
-    letterSpacing: 2,
-    textShadowColor: "rgba(0,0,0,0.2)",
-    textShadowOffset: { width: 1, height: 2 },
-    textShadowRadius: 4,
+    fontSize: 28,
+    fontWeight: "800",
+    color: COLORS.text,
+    letterSpacing: 1,
   },
   content: {
     width: "100%",
-    paddingHorizontal: 24,
   },
   card: {
-    backgroundColor: COLORS.background,
-    borderRadius: 24,
-    borderWidth: 2,
-    borderColor: COLORS.neutral,
-    borderBottomWidth: 6,
     padding: 32,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 8,
+    ...GlobalStyles.shadow,
   },
   header: {
     alignItems: "center",
     marginBottom: 32,
   },
   title: {
-    fontSize: 20,
-    fontWeight: "900",
+    fontSize: 18,
+    fontWeight: "800",
     color: COLORS.text,
     marginBottom: 8,
+    textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   subtitle: {
     fontSize: 14,
     color: COLORS.textLight,
     fontWeight: "600",
+    textAlign: "center",
   },
   inputArea: {
     width: "100%",
     alignItems: "center",
-    marginBottom: 24,
+    marginBottom: 28,
   },
   dotsContainer: {
     flexDirection: "row",
     gap: 16,
   },
   pinDot: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 3,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    borderWidth: 2,
   },
   hiddenInput: {
     position: "absolute",
@@ -336,26 +317,35 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 16,
-    borderWidth: 2,
+    paddingHorizontal: 20,
+    borderRadius: METRICS.radius,
+    borderWidth: METRICS.borderWidth,
     borderColor: COLORS.neutral,
-    borderBottomWidth: 4,
-    backgroundColor: "#F7F7F7",
+    borderBottomWidth: METRICS.borderBottomHeight,
+    backgroundColor: COLORS.background,
+    marginTop: 8,
   },
   bioButtonPressed: {
     transform: [{ translateY: 2 }],
-    borderBottomWidth: 2,
+    borderBottomWidth: METRICS.borderWidth,
   },
   bioText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "800",
     color: COLORS.primary,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  cancelButton: {
+    marginTop: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
   cancelText: {
-    marginTop: 20,
     color: COLORS.textLight,
     fontWeight: "700",
     fontSize: 12,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
 });
