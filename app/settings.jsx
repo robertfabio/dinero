@@ -13,9 +13,11 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import LanguageSelector from "../components/settings/LanguageSelector";
 import SecuritySettings from "../components/settings/SecuritySettings";
 import DineroAlert from "../components/ui/DineroAlert";
 import { DineroContext } from "../context/GlobalState";
+import { useLanguage } from "../context/LanguageContext";
 import { storageUtils } from "../store/storage";
 import { COLORS, METRICS } from "../styles/globalStyles";
 
@@ -23,6 +25,8 @@ export default function SettingsScreen() {
   const router = useRouter();
   const [transactions] = useContext(DineroContext);
   const [securityModalVisible, setSecurityModalVisible] = useState(false);
+  const [languageSelectorVisible, setLanguageSelectorVisible] = useState(false);
+  const { t, getCurrentLanguageInfo } = useLanguage();
   const [alertConfig, setAlertConfig] = useState({
     visible: false,
     title: "",
@@ -44,7 +48,7 @@ export default function SettingsScreen() {
   const handleExportData = async () => {
     if (!transactions || transactions.length === 0) {
       showAlert({
-        title: "Sem Dados",
+        title: t("settings.exportData"),
         message: "Você não possui transações para exportar.",
         type: "info",
       });
@@ -295,15 +299,9 @@ export default function SettingsScreen() {
           />
           <SettingOption
             icon={LucideIcons.Languages}
-            title="Idioma"
-            subtitle="Português (Brasil)"
-            onPress={() =>
-              showAlert({
-                title: "Em Breve",
-                message: "Funcionalidade em desenvolvimento",
-                type: "info",
-              })
-            }
+            title={t("settings.language")}
+            subtitle={getCurrentLanguageInfo().name}
+            onPress={() => setLanguageSelectorVisible(true)}
           />
         </View>
 
@@ -384,6 +382,11 @@ export default function SettingsScreen() {
           <SecuritySettings onClose={() => setSecurityModalVisible(false)} />
         </View>
       </Modal>
+
+      <LanguageSelector
+        visible={languageSelectorVisible}
+        onClose={() => setLanguageSelectorVisible(false)}
+      />
 
       <DineroAlert
         visible={alertConfig.visible}

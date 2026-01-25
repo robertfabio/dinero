@@ -31,6 +31,7 @@ import TransactionCalendar from "../../components/transactions/TransactionCalend
 import AnimatedCard from "../../components/ui/AnimatedCard";
 import DineroButton from "../../components/ui/DineroButton";
 import { DineroContext } from "../../context/GlobalState";
+import { useLanguage } from "../../context/LanguageContext";
 import { storageUtils } from "../../store/storage";
 import { COLORS, GlobalStyles } from "../../styles/globalStyles";
 import { generatePDFContent } from "../../utils/pdfGenerator";
@@ -40,6 +41,7 @@ import { useSummaryData } from "../../utils/useSummaryData";
 const screenWidth = Dimensions.get("window").width;
 
 function EmptyState() {
+  const { t } = useLanguage();
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.screenBg }}>
       <ScrollView
@@ -69,7 +71,7 @@ function EmptyState() {
               marginBottom: 8,
             }}
           >
-            Nenhuma transação ainda
+            {t("summary.noTransactions")}
           </Text>
           <Text
             style={{
@@ -79,7 +81,7 @@ function EmptyState() {
               fontWeight: "600",
             }}
           >
-            Adicione transações para ver seu resumo financeiro aqui.
+            {t("summary.addTransactionsToSee")}
           </Text>
         </View>
       </ScrollView>

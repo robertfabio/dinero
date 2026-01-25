@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { COLORS } from "../../styles/globalStyles";
-import DineroAlert from "../DineroAlert";
+import DineroAlert from "../ui/DineroAlert";
 
 export default function SecuritySettings({ onClose }) {
   const { logout, resetAuth, biometricAvailable } = useAuth();
