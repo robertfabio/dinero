@@ -1,4 +1,3 @@
-import { Image } from "expo-image";
 import { Redirect, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -20,9 +19,10 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import DineroButton from "../components/DineroButton";
+import DineroButton from "../components/ui/DineroButton";
+import DineroImage from "../components/ui/DineroImage";
+import { storageUtils } from "../store/storage";
 import { COLORS, THEME } from "../styles/globalStyles";
-import { storageUtils } from "../utils/storage";
 
 const ONBOARDING_KEY = "@dinero:onboarding_completed";
 
@@ -122,11 +122,7 @@ const Slide = ({ item, index, x }) => {
 
       <View style={styles.imageContainer}>
         <Animated.View style={[styles.imageWrapper, animatedImageStyle]}>
-          <Image
-            source={item.image}
-            style={styles.image}
-            contentFit="contain"
-          />
+          <DineroImage source={item.image} style={styles.image} />
         </Animated.View>
       </View>
 

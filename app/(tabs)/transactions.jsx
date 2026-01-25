@@ -10,12 +10,12 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import AddTransactionScreen from "../../components/add-transaction";
-import DineroModal from "../../components/DineroModal";
-import TransactionItem from "../../components/TransactionItem";
+import AddTransactionScreen from "../../components/transactions/add-transaction";
+import TransactionItem from "../../components/transactions/TransactionItem";
+import DineroModal from "../../components/ui/DineroModal";
 import { DineroContext } from "../../context/GlobalState";
+import { storageUtils } from "../../store/storage";
 import { COLORS, GlobalStyles, THEME } from "../../styles/globalStyles";
-import { storageUtils } from "../../utils/storage";
 
 export default function TransactionScreen() {
   const [transactions, setTransactions] = useContext(DineroContext);

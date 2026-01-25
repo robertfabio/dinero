@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { storageUtils } from "../utils/storage";
+import { storageUtils } from "../store/storage";
 
 const WISHLIST_KEY = "@dinero:wishlist";
-const DEALS_CACHE_KEY = "@dinero:deals_cache";
-const CACHE_DURATION = 30 * 60 * 1000; // 30 minutos
 
 // Produtos de exemplo (futuramente serão puxados de uma API com links de afiliado)
 const SAMPLE_DEALS = [

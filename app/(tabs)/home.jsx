@@ -13,12 +13,13 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AnimatedNumber from "../../components/AnimatedNumber";
-import CoinTicker from "../../components/CoinTicker";
-import NewsItem from "../../components/NewsItem";
-import QuickInsights from "../../components/QuickInsights";
-import StatCard from "../../components/StatCard";
-import TransactionItem from "../../components/TransactionItem";
+import TestErrorButton from "../../components/dev/TestErrorButton";
+import CoinTicker from "../../components/market/CoinTicker";
+import NewsItem from "../../components/news/NewsItem";
+import QuickInsights from "../../components/summary/QuickInsights";
+import StatCard from "../../components/summary/StatCard";
+import TransactionItem from "../../components/transactions/TransactionItem";
+import AnimatedNumber from "../../components/ui/AnimatedNumber";
 import { DineroContext } from "../../context/GlobalState";
 import { useCoinData } from "../../hooks/useCoinData";
 import { useNewsFeeds } from "../../hooks/useNewsFeeds";
@@ -232,6 +233,9 @@ export default function Home() {
                     ))}
               </View>
             )}
+
+            {/* Componente de teste para Error Boundary (apenas em desenvolvimento) */}
+            <TestErrorButton />
           </View>
         }
         ListEmptyComponent={

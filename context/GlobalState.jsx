@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { storageUtils } from "../utils/storage";
+import { storageUtils } from "../store/storage";
 
 export const DineroContext = createContext();
 

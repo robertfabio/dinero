@@ -4,13 +4,13 @@ import { StatusBar } from "expo-status-bar";
 import * as LucideIcons from "lucide-react-native";
 import React, { useState } from "react";
 import { ActivityIndicator, Modal, Pressable, View } from "react-native";
-import AuthScreen from "../../components/AuthScreen";
-import DineroModal from "../../components/DineroModal";
-import DineroTabBar from "../../components/DineroTabBar";
-import SecuritySettings from "../../components/SecuritySettings";
+import AuthScreen from "../../components/auth/AuthScreen";
+import DineroTabBar from "../../components/navigation/DineroTabBar";
+import SecuritySettings from "../../components/settings/SecuritySettings";
+import DineroModal from "../../components/ui/DineroModal";
 import { useAuth } from "../../context/AuthContext";
+import { storageUtils } from "../../store/storage";
 import { COLORS } from "../../styles/globalStyles";
-import { storageUtils } from "../../utils/storage";
 
 export default function TabsLayout() {
   const [resetModal, setResetModal] = useState(false);

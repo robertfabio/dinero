@@ -1,5 +1,6 @@
 import { XMLParser } from "fast-xml-parser";
 import { useEffect, useState } from "react";
+import { fetch } from "react-native-nitro-fetch";
 
 const RSS_FEEDS = [
   "https://www.infomoney.com.br/feed/",
@@ -32,11 +33,23 @@ export function useNewsFeeds() {
 
       for (const feedUrl of RSS_FEEDS) {
         try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
           const response = await fetch(feedUrl, {
+            signal: controller.signal,
             headers: {
               "User-Agent": "Dinero Finance App",
+              Accept: "application/rss+xml, application/xml, text/xml",
             },
           });
+
+          clearTimeout(timeoutId);
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
           const xmlText = await response.text();
           const result = parser.parse(xmlText);
 
@@ -46,31 +59,75 @@ export function useNewsFeeds() {
               ? result.rss.channel.item
               : [result.rss.channel.item];
           } else if (result.feed?.entry) {
-            // Atom feed
             items = Array.isArray(result.feed.entry)
               ? result.feed.entry
               : [result.feed.entry];
           }
 
           const processedItems = items.slice(0, 10).map((item, index) => {
-            // Extract image
+            // Enhanced image extraction
             let imageUrl = null;
+
+            // Try RSS media tags first
             if (item["media:content"]?.["@_url"]) {
               imageUrl = item["media:content"]["@_url"];
             } else if (item["media:thumbnail"]?.["@_url"]) {
               imageUrl = item["media:thumbnail"]["@_url"];
-            } else if (item.enclosure?.["@_url"]) {
+            } else if (
+              item.enclosure?.["@_url"] &&
+              item.enclosure?.["@_type"]?.includes("image")
+            ) {
               imageUrl = item.enclosure["@_url"];
-            } else if (item["content:encoded"]) {
-              const imgMatch = item["content:encoded"].match(
-                /<img[^>]+src="([^">]+)"/,
-              );
-              if (imgMatch) imageUrl = imgMatch[1];
-            } else if (item.description) {
-              const imgMatch = item.description.match(
-                /<img[^>]+src="([^">]+)"/,
-              );
-              if (imgMatch) imageUrl = imgMatch[1];
+            }
+
+            // If no media tags, extract from content with improved regex
+            if (!imageUrl) {
+              const contentSources = [
+                item["content:encoded"],
+                item.description,
+                item.summary,
+                item.content,
+              ].filter(Boolean);
+
+              for (const content of contentSources) {
+                // Try multiple image extraction patterns
+                const patterns = [
+                  /<img[^>]+src=["']([^"']+\.(jpg|jpeg|png|webp|gif))[^"']*["'][^>]*>/i,
+                  /<img[^>]+src=["']([^"']+)["'][^>]*>/i,
+                  /https?:\/\/[^\s<>"]+\.(jpg|jpeg|png|webp|gif)/i,
+                  /property=["']og:image["'][^>]+content=["']([^"']+)["']/i,
+                  /name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i,
+                ];
+
+                for (const pattern of patterns) {
+                  const match = content.match(pattern);
+                  if (match && match[1]) {
+                    imageUrl = match[1];
+                    break;
+                  }
+                }
+                if (imageUrl) break;
+              }
+            }
+
+            // Clean and validate image URL
+            if (imageUrl) {
+              imageUrl = imageUrl.trim();
+              // Fix relative URLs
+              if (imageUrl.startsWith("//")) {
+                imageUrl = "https:" + imageUrl;
+              } else if (imageUrl.startsWith("/")) {
+                try {
+                  const baseUrl = new URL(item.link || feedUrl);
+                  imageUrl = baseUrl.origin + imageUrl;
+                } catch {
+                  imageUrl = null;
+                }
+              }
+              // Validate URL format
+              if (imageUrl && !imageUrl.match(/^https?:\/\//)) {
+                imageUrl = null;
+              }
             }
 
             return {

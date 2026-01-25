@@ -1,12 +1,12 @@
 import * as LocalAuthentication from "expo-local-authentication";
 import {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useState,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
-import { secureStorage } from "../utils/storage";
+import { secureStorage } from "../store/storage";
 
 const AuthContext = createContext();
 

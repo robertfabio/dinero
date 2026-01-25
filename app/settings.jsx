@@ -2,22 +2,22 @@ import { useRouter } from "expo-router";
 import * as LucideIcons from "lucide-react-native";
 import { useContext, useState } from "react";
 import {
-    Modal,
-    Pressable,
-    ScrollView,
-    Share,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-    Linking,
+  Linking,
+  Modal,
+  Pressable,
+  ScrollView,
+  Share,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import DineroAlert from "../components/DineroAlert";
-import SecuritySettings from "../components/SecuritySettings";
+import SecuritySettings from "../components/settings/SecuritySettings";
+import DineroAlert from "../components/ui/DineroAlert";
 import { DineroContext } from "../context/GlobalState";
+import { storageUtils } from "../store/storage";
 import { COLORS, METRICS } from "../styles/globalStyles";
-import { storageUtils } from "../utils/storage";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -327,9 +327,9 @@ export default function SettingsScreen() {
             title="Termos de Serviço"
             subtitle="Consulte os termos legais"
             onPress={() =>
-              Linking.openURL("https://robertfabio.github.io/privacy-policy-dinero/").catch((err) =>
-                console.error("Failed to open URL:", err),
-              )
+              Linking.openURL(
+                "https://robertfabio.github.io/privacy-policy-dinero/",
+              ).catch((err) => console.error("Failed to open URL:", err))
             }
           />
           <SettingOption

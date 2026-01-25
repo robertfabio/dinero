@@ -20,22 +20,22 @@ import {
   View,
 } from "react-native";
 
-import AnimatedCard from "../../components/AnimatedCard";
-import AnimatedPieChart from "../../components/AnimatedPieChart";
-import CategoryListItem from "../../components/CategoryListItem";
-import DineroButton from "../../components/DineroButton";
-import GoalsManager from "../../components/GoalsManager";
-import PeriodFilter from "../../components/PeriodFilter";
-import QuickInsights from "../../components/QuickInsights";
-import StatCard from "../../components/StatCard";
-import SummaryCard from "../../components/SummaryCard";
-import TransactionCalendar from "../../components/TransactionCalendar";
+import AnimatedPieChart from "../../components/charts/AnimatedPieChart";
+import PeriodFilter from "../../components/filters/PeriodFilter";
+import GoalsManager from "../../components/goals/GoalsManager";
+import CategoryListItem from "../../components/lists/CategoryListItem";
+import QuickInsights from "../../components/summary/QuickInsights";
+import StatCard from "../../components/summary/StatCard";
+import SummaryCard from "../../components/summary/SummaryCard";
+import TransactionCalendar from "../../components/transactions/TransactionCalendar";
+import AnimatedCard from "../../components/ui/AnimatedCard";
+import DineroButton from "../../components/ui/DineroButton";
 import { DineroContext } from "../../context/GlobalState";
-import { usePeriodComparison } from "../../hooks/usePeriodComparison";
-import { useSummaryData } from "../../hooks/useSummaryData";
+import { storageUtils } from "../../store/storage";
 import { COLORS, GlobalStyles } from "../../styles/globalStyles";
 import { generatePDFContent } from "../../utils/pdfGenerator";
-import { storageUtils } from "../../utils/storage";
+import { usePeriodComparison } from "../../utils/usePeriodComparison";
+import { useSummaryData } from "../../utils/useSummaryData";
 
 const screenWidth = Dimensions.get("window").width;
 
