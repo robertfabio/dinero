@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { createContext, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
+import * as Localization from "expo-localization";
 import i18n from "../lib/i18n";
 
 const LanguageContext = createContext();
@@ -7,6 +9,36 @@ const LanguageContext = createContext();
 export const LanguageProvider = ({ children }) => {
   const { t } = useTranslation();
   const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
+
+  // Initialize language based on device locale on first load
+  useEffect(() => {
+    const initializeLanguage = async () => {
+      try {
+        const deviceLanguage = Localization.getLocales()[0]?.languageTag || "pt-BR";
+        
+        // Map common locale codes to supported languages
+        let targetLanguage = "pt-BR"; // Default fallback
+        
+        if (deviceLanguage.startsWith("pt")) {
+          targetLanguage = "pt-BR";
+        } else if (deviceLanguage.startsWith("en")) {
+          targetLanguage = "en";
+        } else if (deviceLanguage.startsWith("es")) {
+          targetLanguage = "es";
+        }
+        
+        // Only change if different from current
+        if (targetLanguage !== i18n.language) {
+          await i18n.changeLanguage(targetLanguage);
+          setCurrentLanguage(targetLanguage);
+        }
+      } catch (error) {
+        console.warn("Error detecting device language:", error);
+      }
+    };
+
+    initializeLanguage();
+  }, []);
 
   const changeLanguage = async (languageCode) => {
     try {

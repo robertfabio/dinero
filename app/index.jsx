@@ -1,4 +1,4 @@
-import { Redirect, useRouter } from "expo-router";
+import { Redirect } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -19,8 +19,10 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AuthScreen from "../components/auth/AuthScreen";
 import DineroButton from "../components/ui/DineroButton";
 import DineroImage from "../components/ui/DineroImage";
+import { useAuth } from "../context/AuthContext";
 import { storageUtils } from "../store/storage";
 import { COLORS, THEME } from "../styles/globalStyles";
 
@@ -169,25 +171,10 @@ const Pagination = ({ data, x }) => {
   );
 };
 
-const WelcomeScreen = () => {
-  const router = useRouter();
+const WelcomeScreen = ({ onComplete }) => {
   const x = useSharedValue(0);
   const flatListRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [shouldRedirect, setShouldRedirect] = useState(false);
-  const [isChecking, setIsChecking] = useState(true);
-
-  useEffect(() => {
-    const checkOnboarding = () => {
-      const completed = storageUtils.getItem(ONBOARDING_KEY);
-      if (completed === "true") {
-        setShouldRedirect(true);
-      } else {
-        setIsChecking(false);
-      }
-    };
-    checkOnboarding();
-  }, []);
 
   const scrollHandler = useAnimatedScrollHandler(
     {
@@ -205,7 +192,7 @@ const WelcomeScreen = () => {
 
   const completeOnboarding = () => {
     storageUtils.setItem(ONBOARDING_KEY, "true");
-    router.replace("/(tabs)/home");
+    onComplete?.();
   };
 
   const handleNext = () => {
@@ -220,20 +207,6 @@ const WelcomeScreen = () => {
   const handleSkip = () => {
     completeOnboarding();
   };
-
-  // Redirect se já completou onboarding
-  if (shouldRedirect) {
-    return <Redirect href="/(tabs)/home" />;
-  }
-
-  // Loading state
-  if (isChecking) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
-      </View>
-    );
-  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -414,4 +387,68 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WelcomeScreen;
+export default function AppEntry() {
+  const { isAuthenticated, hasCredentials, isLoading } = useAuth();
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
+  const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
+
+  useEffect(() => {
+    const checkOnboardingStatus = () => {
+      try {
+        const completed = storageUtils.getItem(ONBOARDING_KEY);
+        console.log("Onboarding completed:", completed);
+        setHasCompletedOnboarding(completed === "true");
+      } catch (error) {
+        console.error("Error checking onboarding status:", error);
+        setHasCompletedOnboarding(false);
+      } finally {
+        setIsCheckingOnboarding(false);
+      }
+    };
+
+    if (!isLoading) {
+      checkOnboardingStatus();
+    }
+  }, [isLoading]);
+
+  console.log("AppEntry state:", {
+    isAuthenticated,
+    hasCredentials,
+    isLoading,
+    hasCompletedOnboarding,
+    isCheckingOnboarding,
+  });
+
+  // Show loading while checking auth and onboarding
+  if (isLoading || isCheckingOnboarding) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+        <Text style={{ color: COLORS.primary, marginTop: 10 }}>
+          Carregando...
+        </Text>
+      </View>
+    );
+  }
+
+  // If user is authenticated, go to home
+  if (isAuthenticated) {
+    return <Redirect href="/(tabs)/home" />;
+  }
+
+  // If user has credentials (PIN setup) but not authenticated, show auth screen
+  if (hasCredentials) {
+    console.log("Showing AuthScreen - user has credentials");
+    return <AuthScreen />;
+  }
+
+  // If user hasn't completed onboarding, show welcome screen
+  if (!hasCompletedOnboarding) {
+    console.log("Showing WelcomeScreen - onboarding not completed");
+    return <WelcomeScreen onComplete={() => setHasCompletedOnboarding(true)} />;
+  }
+
+  // If completed onboarding but no credentials, show auth screen to setup PIN
+  console.log("Showing AuthScreen - setup PIN");
+  return <AuthScreen />;
+}

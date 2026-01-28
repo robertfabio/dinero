@@ -1,6 +1,5 @@
 import { XMLParser } from "fast-xml-parser";
 import { useEffect, useState } from "react";
-import { fetch } from "react-native-nitro-fetch";
 
 const RSS_FEEDS = [
   "https://www.infomoney.com.br/feed/",

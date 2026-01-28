@@ -3,7 +3,7 @@ import {
   AlertTriangle,
   Mail,
   MessageCircle,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react-native";
 import React from "react";
 import {
@@ -17,7 +17,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { COLORS } from "../styles/globalStyles";
+import { COLORS } from "../../styles/globalStyles";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {

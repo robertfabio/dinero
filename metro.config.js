@@ -1,6 +1,6 @@
 // metro.config.js
 const { getDefaultConfig } = require("expo/metro-config");
-const { withNativeWind } = require("nativewind/metro");
+const path = require("path");
 
 const config = getDefaultConfig(__dirname);
 
@@ -23,4 +23,8 @@ config.resolver.assetExts.push(
 // Support for react-native-skia
 config.resolver.platforms = ["native", "android", "ios", "web"];
 
-module.exports = withNativeWind(config, { input: "./global.css" });
+// Fix Windows path resolution
+config.resolver.resolverMainFields = ["expo", "browser", "main"];
+config.resolver.enableGlobalPackages = true;
+
+module.exports = config;

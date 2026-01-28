@@ -1,33 +1,16 @@
-// Performance optimized Image component with react-native-fast-image
-import { StyleSheet, View } from "react-native";
-import FastImage from "react-native-fast-image";
+import { Image, StyleSheet } from "react-native";
+import Animated, { FadeIn } from "react-native-reanimated";
 
-const DineroImage = ({
-  source,
-  style,
-  resizeMode = FastImage.resizeMode.cover,
-  fallback,
-  priority = FastImage.priority.normal,
-  ...props
-}) => {
+const DineroImage = ({ source, style, resizeMode = "cover", ...props }) => {
   return (
-    <View style={style}>
-      <FastImage
-        source={
-          typeof source === "string"
-            ? {
-                uri: source,
-                priority,
-                cache: FastImage.cacheControl.immutable,
-              }
-            : source
-        }
+    <Animated.View style={[style, { overflow: "hidden" }]} entering={FadeIn}>
+      <Image
+        source={typeof source === "string" ? { uri: source } : source}
         style={StyleSheet.absoluteFillObject}
         resizeMode={resizeMode}
-        fallback={fallback}
         {...props}
       />
-    </View>
+    </Animated.View>
   );
 };
 

@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { fetch } from "react-native-nitro-fetch";
 
 const COIN_APIS = {
   currencies: [
